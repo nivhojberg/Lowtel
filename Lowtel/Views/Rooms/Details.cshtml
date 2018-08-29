@@ -1,0 +1,36 @@
+﻿@model Lowtel.Models.Room
+
+@{
+    ViewData["Title"] = "Details";
+}
+
+<h2>Details</h2>
+
+<div>
+    <h4>Room</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.HotelId)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.HotelId)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.RoomTypeId)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.RoomTypeId)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.isFree)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.isFree)
+        </dd>
+    </dl>
+</div>
+<div>
+    <a asp-action="Edit" asp-route-id="@Model.Id">Edit</a> |
+    <a asp-action="Index">Back to List</a>
+</div>

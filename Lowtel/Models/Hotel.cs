@@ -7,10 +7,8 @@ using System.Threading.Tasks;
 namespace Lowtel.Models
 {
     public class Hotel
-    {
-        [Key]
+    {        
         public int Id { get; set; }
-
         public string Name { get; set; }
         public string Address { get; set; }        
         public int StarsRate { get; set; }

@@ -10,17 +10,6 @@ using Lowtel.Models;
 
 namespace Lowtel.Controllers
 {
-    public struct roomExtendData
-    {
-        public int roomId;
-        public int hotelId;
-        public int roomTypeId;
-        public string hotelName;
-        public string roomTypeName;
-        public int PriceForNight;
-        public bool isFree;
-    }
-
     public class RoomsController : Controller
     {
         private readonly LotelContext _context;
@@ -161,7 +150,8 @@ namespace Lowtel.Controllers
             return _context.Room.Any(e => e.Id == id);
         }
 
-        public IEnumerable<roomExtendData> GetAllRooms()
+
+        public IEnumerable<RoomExtendData> GetAllRooms()
         {
             using (var db = this._context)
             {
@@ -172,7 +162,7 @@ namespace Lowtel.Controllers
                         room.HotelId equals hotel.Id into hotel
                         from roomTypeTable in roomType.DefaultIfEmpty()
                         from hotelTable in hotel.DefaultIfEmpty()
-                        select new roomExtendData
+                        select new RoomExtendData
                         {
                             roomId = room.Id,
                             hotelId = room.HotelId,

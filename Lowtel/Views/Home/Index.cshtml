@@ -48,9 +48,14 @@
 
     <script type="text/javascript">
         function bingMapCallback() {
-            new Microsoft.Maps.Map(document.getElementById("bingMap"), {
-                credentials: '8jdU9kPTCEzVmyT3jRkU~rm3ZVd7SbAdEPp8lygIm8A~AuLnSHivAFETHCaowja_dJ75w4ff92UyxgW5RNfOMUaAVfTUeYeCj5oKEzjm4ItE'
+            var map = new Microsoft.Maps.Map(document.getElementById("bingMap"), {
+                credentials: '8jdU9kPTCEzVmyT3jRkU~rm3ZVd7SbAdEPp8lygIm8A~AuLnSHivAFETHCaowja_dJ75w4ff92UyxgW5RNfOMUaAVfTUeYeCj5oKEzjm4ItE',
+                center: new Microsoft.Maps.Location(0, 0),
+                zoom: 1,
             });
+
+            // TODO: add hotels locations like this example
+            map.entities.push(new Microsoft.Maps.Pushpin(new Microsoft.Maps.Location(31.5, 34.5)))
         }
     </script>
     <script type="text/javascript"

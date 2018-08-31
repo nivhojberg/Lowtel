@@ -29,21 +29,6 @@ namespace Lowtel.Controllers
             return View();
         }
 
-        public IActionResult Hotels()
-        {
-            return View();
-        }
-
-        public IActionResult Reservation()
-        {
-            return View();
-        }
-
-        public IActionResult Rooms()
-        {
-            return View();
-        }
-
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {

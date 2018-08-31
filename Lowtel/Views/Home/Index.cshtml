@@ -39,3 +39,21 @@
     <div class="col-md-1">
     </div>
 </div>
+<div>
+    <h2>Hotels Map</h2>
+    <p>
+        <a asp-controller="Hotels" asp-action="Index">Click here</a> to check our high quality hotels with low prices across the world.
+    </p>
+    <div id="bingMap"></div>
+
+    <script type="text/javascript">
+        function bingMapCallback() {
+            new Microsoft.Maps.Map(document.getElementById("bingMap"), {
+                credentials: '8jdU9kPTCEzVmyT3jRkU~rm3ZVd7SbAdEPp8lygIm8A~AuLnSHivAFETHCaowja_dJ75w4ff92UyxgW5RNfOMUaAVfTUeYeCj5oKEzjm4ItE'
+            });
+        }
+    </script>
+    <script type="text/javascript"
+            src="https://www.bing.com/api/maps/mapcontrol?callback=bingMapCallback&key=8jdU9kPTCEzVmyT3jRkU~rm3ZVd7SbAdEPp8lygIm8A~AuLnSHivAFETHCaowja_dJ75w4ff92UyxgW5RNfOMUaAVfTUeYeCj5oKEzjm4ItE&setLang=en"
+            async defer></script>
+</div>

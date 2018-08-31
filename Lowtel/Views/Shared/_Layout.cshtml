@@ -45,7 +45,9 @@
     <partial name="_CookieConsentPartial" />
 
     <div class="cover-container">
-        <img src="~/images/cover.jpg" alt="ASP.NET" width="100%" height="450px;" />
+        <a asp-controller="Home" asp-action="Index">
+            <img id="cover" src="~/images/cover.jpg" alt="ASP.NET" />
+        </a>
     </div>
     <div class="container body-content">
         @RenderBody()

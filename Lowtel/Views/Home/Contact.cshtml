@@ -1,17 +1,27 @@
 ﻿@{
     ViewData["Title"] = "Contact";
+    ViewData["Message"] = "Get in touch with us by address, phone or email.";
 }
 <h2>@ViewData["Title"]</h2>
 <h3>@ViewData["Message"]</h3>
 
 <address>
-    One Microsoft Way<br />
-    Redmond, WA 98052-6399<br />
-    <abbr title="Phone">P:</abbr>
-    425.555.0100
+    <span class="glyphicon glyphicon-map-marker"></span>
+    123 Microsoft Way<br />
+    Tel Aviv, ISR 98765-4321
 </address>
 
 <address>
-    <strong>Support:</strong> <a href="mailto:Support@example.com">Support@example.com</a><br />
-    <strong>Marketing:</strong> <a href="mailto:Marketing@example.com">Marketing@example.com</a>
+    <span class="glyphicon glyphicon-earphone"></span>
+    (000) 012-3456
+</address>
+
+<address>
+    <span class="glyphicon-envelope"></span>
+    <strong>Support:</strong>
+    <a href="mailto:Support@lowtel.com">Support@lowtel.com</a>
+    <br />
+    <span class="glyphicon-envelope"></span>
+    <strong>Marketing:</strong>
+    <a href="mailto:Marketing@lowtel.com">Marketing@lowtel.com</a>
 </address>

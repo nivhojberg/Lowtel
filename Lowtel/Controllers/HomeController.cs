@@ -29,7 +29,17 @@ namespace Lowtel.Controllers
             return View();
         }
 
-        public IActionResult Privacy()
+        public IActionResult Hotels()
+        {
+            return View();
+        }
+
+        public IActionResult Reservation()
+        {
+            return View();
+        }
+
+        public IActionResult Rooms()
         {
             return View();
         }

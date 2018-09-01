@@ -20,5 +20,7 @@ namespace Lowtel.Models
         public int StarsRate { get; set; }
         [Display(Name = "Hotel Description")]
         public string Description { get; set; }
+        public Double CordX { get; set; }
+        public Double CordY { get; set; }
     }
 }

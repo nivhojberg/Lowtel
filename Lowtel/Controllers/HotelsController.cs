@@ -9,7 +9,7 @@ using EF.AspNetCore.Models;
 using Lowtel.Models;
 
 namespace Lowtel.Controllers
-{
+{   
     public class HotelsController : Controller
     {
         private readonly LotelContext _context;
@@ -148,6 +148,12 @@ namespace Lowtel.Controllers
         private bool HotelExists(int id)
         {
             return _context.Hotel.Any(e => e.Id == id);
+        }
+
+        // Select map cordinates of all the hotels.
+        public dynamic GetHotelsCords()
+        {
+            return _context.Hotel.Select(h => new { h.Name, h.CordX, h.CordY }).ToList();
         }
     }
 }

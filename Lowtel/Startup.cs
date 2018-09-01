@@ -67,6 +67,18 @@ namespace Lowtel
                 routes.MapRoute(
                     name: "default",
                     template: "{controller=Home}/{action=Index}/{id?}");
+
+                routes.MapRoute(
+                    name: "RoomsCreate",
+                    template: "{controller=Rooms/Create}/{action=Create}");
+
+                routes.MapRoute(
+                    name: "RoomsEdit",
+                    template: "{controller=Rooms/Edit}/{action=Edit}/{id?}/{hotelId?}");
+
+                routes.MapRoute(
+                    name: "RoomsDetails",
+                    template: "{controller=Rooms/Details}/{action=Details}/{id?}/{hotelId?}");
             });
         }
     }

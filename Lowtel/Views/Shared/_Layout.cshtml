@@ -14,7 +14,7 @@
         <link rel="stylesheet" href="https://ajax.aspnetcdn.com/ajax/bootstrap/3.3.7/css/bootstrap.min.css"
               asp-fallback-href="~/lib/bootstrap/dist/css/bootstrap.min.css"
               asp-fallback-test-class="sr-only" asp-fallback-test-property="position" asp-fallback-test-value="absolute" />
-        <link rel="stylesheet" href="~/css/site.min.css" asp-append-version="true" />
+        <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     </environment>
 </head>
 <body>
@@ -33,6 +33,7 @@
                 <ul class="nav navbar-nav">
                     <li><a asp-controller="Hotels" asp-action="Index">Hotels</a></li>
                     <li><a asp-controller="Rooms" asp-action="Index">Rooms</a></li>
+                    <li><a asp-controller="RoomTypes" asp-action="Index">Room-Types</a></li>
                     <li><a asp-controller="Clients" asp-action="Index">Clients</a></li>
                     <li><a asp-controller="Reservations" asp-action="Index">Reservations</a></li>
                     <li><a asp-controller="Home" asp-action="About">About</a></li>
@@ -43,19 +44,6 @@
     </nav>
 
     <partial name="_CookieConsentPartial" />
-
-    <div class="cover-container">
-        <a asp-controller="Home" asp-action="Index">
-            <img id="cover" src="~/images/cover.jpg" alt="ASP.NET" />
-        </a>
-    </div>
-    <div class="container body-content">
-        @RenderBody()
-        <hr />
-        <footer>
-            <p>&copy; 2018 - Lowtel</p>
-        </footer>
-    </div>
 
     <environment include="Development">
         <script src="~/lib/jquery/dist/jquery.js"></script>
@@ -77,6 +65,14 @@
         </script>
         <script src="~/js/site.min.js" asp-append-version="true"></script>
     </environment>
+
+    <div class="container body-content">
+        @RenderBody()
+        <hr />
+        <footer>
+            <p>&copy; 2018 - Lowtel</p>
+        </footer>
+    </div>
 
     @RenderSection("Scripts", required: false)
 </body>

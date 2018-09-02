@@ -22,7 +22,8 @@ namespace Lowtel.Controllers
         // GET: Reservations
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Reservation.ToListAsync());
+            var lotelContext = _context.Reservation.Include(r => r.Client).Include(r => r.Hotel).Include(r => r.Room);
+            return View(await lotelContext.ToListAsync());
         }
 
         // GET: Reservations/Details/5
@@ -34,6 +35,9 @@ namespace Lowtel.Controllers
             }
 
             var reservation = await _context.Reservation
+                .Include(r => r.Client)
+                .Include(r => r.Hotel)
+                .Include(r => r.Room)
                 .FirstOrDefaultAsync(m => m.ClientId == id);
             if (reservation == null)
             {
@@ -46,6 +50,9 @@ namespace Lowtel.Controllers
         // GET: Reservations/Create
         public IActionResult Create()
         {
+            ViewData["ClientId"] = new SelectList(_context.Client, "Id", "Id");
+            ViewData["HotelId"] = new SelectList(_context.Hotel, "Id", "Id");
+            ViewData["RoomId"] = new SelectList(_context.Room, "Id", "Id");
             return View();
         }
 
@@ -62,6 +69,9 @@ namespace Lowtel.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
+            ViewData["ClientId"] = new SelectList(_context.Client, "Id", "Id", reservation.ClientId);
+            ViewData["HotelId"] = new SelectList(_context.Hotel, "Id", "Id", reservation.HotelId);
+            ViewData["RoomId"] = new SelectList(_context.Room, "Id", "Id", reservation.RoomId);
             return View(reservation);
         }
 
@@ -78,6 +88,9 @@ namespace Lowtel.Controllers
             {
                 return NotFound();
             }
+            ViewData["ClientId"] = new SelectList(_context.Client, "Id", "Id", reservation.ClientId);
+            ViewData["HotelId"] = new SelectList(_context.Hotel, "Id", "Id", reservation.HotelId);
+            ViewData["RoomId"] = new SelectList(_context.Room, "Id", "Id", reservation.RoomId);
             return View(reservation);
         }
 
@@ -113,6 +126,9 @@ namespace Lowtel.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
+            ViewData["ClientId"] = new SelectList(_context.Client, "Id", "Id", reservation.ClientId);
+            ViewData["HotelId"] = new SelectList(_context.Hotel, "Id", "Id", reservation.HotelId);
+            ViewData["RoomId"] = new SelectList(_context.Room, "Id", "Id", reservation.RoomId);
             return View(reservation);
         }
 
@@ -125,6 +141,9 @@ namespace Lowtel.Controllers
             }
 
             var reservation = await _context.Reservation
+                .Include(r => r.Client)
+                .Include(r => r.Hotel)
+                .Include(r => r.Room)
                 .FirstOrDefaultAsync(m => m.ClientId == id);
             if (reservation == null)
             {

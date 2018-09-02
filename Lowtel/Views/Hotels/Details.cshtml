@@ -1,10 +1,10 @@
 ﻿@model Lowtel.Models.Hotel
 
 @{
-    ViewData["Title"] = "Details";
+    ViewData["Title"] = "Hotel Details";
 }
 
-<h2>Details</h2>
+<h2>@ViewData["Title"]</h2>
 
 <div>
     <h4>Hotel</h4>
@@ -15,6 +15,12 @@
         </dt>
         <dd>
             @Html.DisplayFor(model => model.Name)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.State)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.State)
         </dd>
         <dt>
             @Html.DisplayNameFor(model => model.Address)

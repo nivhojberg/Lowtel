@@ -1,10 +1,10 @@
 ﻿@model Lowtel.Models.Room
 
 @{
-    ViewData["Title"] = "Create";
+    ViewData["Title"] = "Create Room";
 }
 
-<h2>Create</h2>
+<h2>@ViewData["Title"]</h2>
 
 <h4>Room</h4>
 <hr />
@@ -19,18 +19,16 @@
             </div>
             <div class="form-group">
                 <label asp-for="HotelId" class="control-label"></label>
-                <input asp-for="HotelId" class="form-control" />
-                <span asp-validation-for="HotelId" class="text-danger"></span>
+                <select asp-for="HotelId" class ="form-control" asp-items="ViewBag.HotelId"></select>
             </div>
             <div class="form-group">
                 <label asp-for="RoomTypeId" class="control-label"></label>
-                <input asp-for="RoomTypeId" class="form-control" />
-                <span asp-validation-for="RoomTypeId" class="text-danger"></span>
+                <select asp-for="RoomTypeId" class ="form-control" asp-items="ViewBag.RoomTypeId"></select>
             </div>
             <div class="form-group">
                 <div class="checkbox">
                     <label>
-                        <input asp-for="isFree" /> @Html.DisplayNameFor(model => model.isFree)
+                        <input asp-for="IsFree" /> @Html.DisplayNameFor(model => model.IsFree)
                     </label>
                 </div>
             </div>

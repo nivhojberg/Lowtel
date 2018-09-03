@@ -1,6 +1,5 @@
 ﻿using Lowtel.Models;
 using Microsoft.EntityFrameworkCore;
-using System.Collections.Generic;
 
 namespace EF.AspNetCore.Models
 {
@@ -25,7 +24,10 @@ namespace EF.AspNetCore.Models
                 .HasKey(client => new { client.Id });
 
             modelBuilder.Entity<Reservation>()
-                .HasKey(reservation => new { reservation.ClientId, reservation.HotelId, reservation.RoomId });            
+                .HasKey(reservation => new { reservation.ClientId, reservation.HotelId, reservation.RoomId });
+
+            modelBuilder.Entity<User>()
+               .HasKey(user => new { user.Email });
         }
 
         public DbSet<Hotel> Hotel { get; set; }
@@ -33,5 +35,6 @@ namespace EF.AspNetCore.Models
         public DbSet<Room> Room { get; set; }
         public DbSet<Client> Client { get; set; }        
         public DbSet<Lowtel.Models.Reservation> Reservation { get; set; }
+        public DbSet<Lowtel.Models.User> User { get; set; }
     }
 }

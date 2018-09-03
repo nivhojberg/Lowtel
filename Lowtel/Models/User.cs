@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Lowtel.Models
 {
-    public class RegisterViewModel
+    public class User
     {
         [Required, MaxLength(20)]
         public string FirstName { get; set; }
@@ -19,8 +19,5 @@ namespace Lowtel.Models
 
         [Required, DataType(DataType.Password),MinLength(6),MaxLength(10)]
         public string Password { get; set; }
-
-        [DataType(DataType.Password), Compare(nameof(Password),ErrorMessage = "The password does not match the confirmation password")]
-        public string ConfirmPassword { get; set; }
     }
 }

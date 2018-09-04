@@ -22,7 +22,7 @@ namespace Lowtel.Controllers
         // GET: Rooms
         public async Task<IActionResult> Index()
         {
-            var lotelContext = _context.Room.Include(r => r.Hotel).Include(r => r.RoomType);
+            var lotelContext = _context.Room.Include(r => r.Hotel).Include(r => r.RoomType).OrderBy(r => r.HotelId).ThenBy(r => r.Id);
             return View(await lotelContext.ToListAsync());
         }
 
@@ -49,9 +49,9 @@ namespace Lowtel.Controllers
         // GET: Rooms/Create
         public IActionResult Create()
         {
-            ViewData["HotelId"] = new SelectList(_context.Hotel, "Id", "Id");
-            ViewData["RoomTypeId"] = new SelectList(_context.RoomType, "Id", "Id");
-            return View();
+            ViewData["HotelId"] = new SelectList(_context.Hotel, "Id", "Name");
+            ViewData["RoomTypeId"] = new SelectList(_context.RoomType, "Id", "Name");
+            return View(new Room());
         }
 
         // POST: Rooms/Create
@@ -86,7 +86,7 @@ namespace Lowtel.Controllers
                 return NotFound();
             }
             ViewData["HotelId"] = new SelectList(_context.Hotel, "Id", "Id", room.HotelId);
-            ViewData["RoomTypeId"] = new SelectList(_context.RoomType, "Id", "Id", room.RoomTypeId);
+            ViewData["RoomTypeId"] = new SelectList(_context.RoomType, "Id", "Name", room.RoomTypeId);
             return View(room);
         }
 
@@ -161,6 +161,11 @@ namespace Lowtel.Controllers
         private bool RoomExists(int id, int hotelId)
         {
             return _context.Room.Any(e => (e.Id == id) && (e.HotelId == hotelId));
+        }
+
+        public int GetLastRoomNumberInHotel(int hotelId)
+        {
+            return _context.Room.Where(room => (room.HotelId == hotelId)).Max(room => room.Id);
         }
     }
 }

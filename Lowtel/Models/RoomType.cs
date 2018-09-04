@@ -7,10 +7,14 @@ using System.Threading.Tasks;
 namespace Lowtel.Models
 {
     public class RoomType
-    {        
-        public int Id { get; set; }    
+    {
+        [Display(Name = "Room Type Id")]
+        public int Id { get; set; }
+        [Display(Name = "Room Type Name")]
         public string Name { get; set; }
+        [Display(Name = "Room Type Description")]
         public string Description { get; set; }
-        public int PriceForNight { get; set; }
+        [Display(Name = "Price For Night ($)")]
+        public int PriceForNight { get; set; }        
     }
 }

@@ -1,10 +1,10 @@
 ﻿@model Lowtel.Models.Hotel
 
 @{
-    ViewData["Title"] = "Create";
+    ViewData["Title"] = "Create Hotel";
 }
 
-<h2>Create</h2>
+<h2>@ViewData["Title"]</h2>
 
 <h4>Hotel</h4>
 <hr />
@@ -23,6 +23,11 @@
                 <span asp-validation-for="Name" class="text-danger"></span>
             </div>
             <div class="form-group">
+                <label asp-for="State" class="control-label"></label>
+                <input asp-for="State" class="form-control" />
+                <span asp-validation-for="State" class="text-danger"></span>
+            </div>
+            <div class="form-group">
                 <label asp-for="Address" class="control-label"></label>
                 <input asp-for="Address" class="form-control" />
                 <span asp-validation-for="Address" class="text-danger"></span>
@@ -36,6 +41,16 @@
                 <label asp-for="Description" class="control-label"></label>
                 <input asp-for="Description" class="form-control" />
                 <span asp-validation-for="Description" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="CordX" class="control-label"></label>
+                <input asp-for="CordX" class="form-control" />
+                <span asp-validation-for="CordX" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="CordY" class="control-label"></label>
+                <input asp-for="CordY" class="form-control" />
+                <span asp-validation-for="CordY" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <input type="submit" value="Create" class="btn btn-default" />

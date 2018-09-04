@@ -22,19 +22,22 @@ namespace Lowtel.Controllers
         // GET: Rooms
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Room.ToListAsync());
+            var lotelContext = _context.Room.Include(r => r.Hotel).Include(r => r.RoomType);
+            return View(await lotelContext.ToListAsync());
         }
 
         // GET: Rooms/Details/5
-        public async Task<IActionResult> Details(int? id)
+        public async Task<IActionResult> Details(int? id, int? hotelId)
         {
-            if (id == null)
+            if (id == null || hotelId == null)
             {
                 return NotFound();
             }
 
             var room = await _context.Room
-                .FirstOrDefaultAsync(m => m.Id == id);
+                .Include(r => r.Hotel)
+                .Include(r => r.RoomType)
+                .FirstOrDefaultAsync(m => (m.Id == id) && (m.HotelId == hotelId));
             if (room == null)
             {
                 return NotFound();
@@ -46,6 +49,8 @@ namespace Lowtel.Controllers
         // GET: Rooms/Create
         public IActionResult Create()
         {
+            ViewData["HotelId"] = new SelectList(_context.Hotel, "Id", "Id");
+            ViewData["RoomTypeId"] = new SelectList(_context.RoomType, "Id", "Id");
             return View();
         }
 
@@ -54,7 +59,7 @@ namespace Lowtel.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,HotelId,RoomTypeId,isFree")] Room room)
+        public async Task<IActionResult> Create([Bind("Id,HotelId,RoomTypeId,IsFree")] Room room)
         {
             if (ModelState.IsValid)
             {
@@ -62,22 +67,26 @@ namespace Lowtel.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
+            ViewData["HotelId"] = new SelectList(_context.Hotel, "Id", "Id", room.HotelId);
+            ViewData["RoomTypeId"] = new SelectList(_context.RoomType, "Id", "Id", room.RoomTypeId);
             return View(room);
         }
 
         // GET: Rooms/Edit/5
-        public async Task<IActionResult> Edit(int? id)
+        public async Task<IActionResult> Edit(int? id, int? hotelId)
         {
-            if (id == null)
+            if (id == null || hotelId == null)
             {
                 return NotFound();
             }
 
-            var room = await _context.Room.FindAsync(id);
+            var room = await _context.Room.FindAsync(id, hotelId);
             if (room == null)
             {
                 return NotFound();
             }
+            ViewData["HotelId"] = new SelectList(_context.Hotel, "Id", "Id", room.HotelId);
+            ViewData["RoomTypeId"] = new SelectList(_context.RoomType, "Id", "Id", room.RoomTypeId);
             return View(room);
         }
 
@@ -86,7 +95,7 @@ namespace Lowtel.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,HotelId,RoomTypeId,isFree")] Room room)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,HotelId,RoomTypeId,IsFree")] Room room)
         {
             if (id != room.Id)
             {
@@ -102,7 +111,7 @@ namespace Lowtel.Controllers
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!RoomExists(room.Id))
+                    if (!RoomExists(room.Id, room.HotelId))
                     {
                         return NotFound();
                     }
@@ -113,19 +122,23 @@ namespace Lowtel.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
+            ViewData["HotelId"] = new SelectList(_context.Hotel, "Id", "Id", room.HotelId);
+            ViewData["RoomTypeId"] = new SelectList(_context.RoomType, "Id", "Id", room.RoomTypeId);
             return View(room);
         }
 
         // GET: Rooms/Delete/5
-        public async Task<IActionResult> Delete(int? id)
+        public async Task<IActionResult> Delete(int? id, int? hotelId)
         {
-            if (id == null)
+            if (id == null || hotelId == null)
             {
                 return NotFound();
             }
 
             var room = await _context.Room
-                .FirstOrDefaultAsync(m => m.Id == id);
+                .Include(r => r.Hotel)
+                .Include(r => r.RoomType)
+                .FirstOrDefaultAsync(m => (m.Id == id) && (m.HotelId == hotelId));
             if (room == null)
             {
                 return NotFound();
@@ -137,42 +150,17 @@ namespace Lowtel.Controllers
         // POST: Rooms/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
+        public async Task<IActionResult> DeleteConfirmed(int id, int hotelId)
         {
-            var room = await _context.Room.FindAsync(id);
+            var room = await _context.Room.FindAsync(id, hotelId);
             _context.Room.Remove(room);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
-        private bool RoomExists(int id)
+        private bool RoomExists(int id, int hotelId)
         {
-            return _context.Room.Any(e => e.Id == id);
-        }
-
-
-        public IEnumerable<RoomExtendData> GetAllRooms()
-        {
-            using (var db = this._context)
-            {
-                return (from room in db.Room
-                        join roomType in db.RoomType on
-                        room.RoomTypeId equals roomType.Id into roomType
-                        join hotel in db.Hotel on
-                        room.HotelId equals hotel.Id into hotel
-                        from roomTypeTable in roomType.DefaultIfEmpty()
-                        from hotelTable in hotel.DefaultIfEmpty()
-                        select new RoomExtendData
-                        {
-                            roomId = room.Id,
-                            hotelId = room.HotelId,
-                            roomTypeId = room.RoomTypeId,
-                            hotelName = hotelTable.Name,
-                            roomTypeName = roomTypeTable.Name,
-                            PriceForNight = roomTypeTable.PriceForNight,
-                            isFree = room.isFree
-                        }).ToList();
-            }
+            return _context.Room.Any(e => (e.Id == id) && (e.HotelId == hotelId));
         }
     }
 }

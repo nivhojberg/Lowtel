@@ -1,26 +1,44 @@
 ﻿@model Lowtel.Models.Room
 
 @{
-    ViewData["Title"] = "Details";
+    ViewData["Title"] = "Room Details";
 }
 
-<h2>Details</h2>
+<h2>ViewData["Title"]</h2>
 
 <div>
     <h4>Room</h4>
     <hr />
     <dl class="dl-horizontal">
         <dt>
-            @Html.DisplayNameFor(model => model.RoomTypeId)
+            @Html.DisplayNameFor(model => model.Hotel.Name)
         </dt>
         <dd>
-            @Html.DisplayFor(model => model.RoomTypeId)
+            @Html.DisplayFor(model => model.Hotel.Name)
         </dd>
         <dt>
-            @Html.DisplayNameFor(model => model.isFree)
+            @Html.DisplayNameFor(model => model.Id)
         </dt>
         <dd>
-            @Html.DisplayFor(model => model.isFree)
+            @Html.DisplayFor(model => model.Id)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.RoomType.Name)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.RoomType.Name)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.RoomType.Description)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.RoomType.Description)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.IsFree)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.IsFree)
         </dd>
     </dl>
 </div>

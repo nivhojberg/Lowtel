@@ -7,11 +7,16 @@ using System.Threading.Tasks;
 namespace Lowtel.Models
 {
     public class Client
-    {        
-        public string Id { get; set; }    
+    {
+        [Display(Name = "Client Id")]
+        public string Id { get; set; }
+        [Display(Name = "First Name")]
         public string FirstName { get; set; }
+        [Display(Name = "Last Name")]
         public string LastName { get; set; }
+        [Display(Name = "Phone Number")]
         public string PhoneNumber { get; set; }
-        public string CreditCard { get; set; }
+        [Display(Name = "Credit Card")]
+        public string CreditCard { get; set; }        
     }
 }

@@ -1,7 +1,7 @@
 ﻿@model IEnumerable<Lowtel.Models.Room>
 
 @{
-    ViewData["Title"] = "Room";
+    ViewData["Title"] = "Rooms";
 }
 
 <h2>@ViewData["Title"]</h2>
@@ -22,7 +22,7 @@
                 @Html.DisplayNameFor(model => model.RoomTypeId)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.isFree)
+                @Html.DisplayNameFor(model => model.IsFree)
             </th>
             <th></th>
         </tr>
@@ -40,12 +40,12 @@
                 @Html.DisplayFor(modelItem => item.RoomTypeId)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.isFree)
+                @Html.DisplayFor(modelItem => item.IsFree)
             </td>
             <td>
-                @Html.ActionLink("Edit", "Edit", new { /* id=item.PrimaryKey */ }) |
-                @Html.ActionLink("Details", "Details", new { /* id=item.PrimaryKey */ }) |
-                @Html.ActionLink("Delete", "Delete", new { /* id=item.PrimaryKey */ })
+                @Html.ActionLink("Edit", "Edit/" + item.Id + "/" + item.HotelId) |
+                @Html.ActionLink("Details", "Details/" + item.Id + "/" + item.HotelId) |
+                @Html.ActionLink("Delete", "Delete/" + item.Id + "/" + item.HotelId)
             </td>
         </tr>
 }

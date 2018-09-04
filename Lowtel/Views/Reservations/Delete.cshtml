@@ -1,10 +1,10 @@
 ﻿@model Lowtel.Models.Reservation
 
 @{
-    ViewData["Title"] = "Delete";
+    ViewData["Title"] = "Delete Reservation";
 }
 
-<h2>Delete</h2>
+<h2>@ViewData["Title"]</h2>
 
 <h3>Are you sure you want to delete this?</h3>
 <div>
@@ -22,6 +22,24 @@
         </dt>
         <dd>
             @Html.DisplayFor(model => model.CheckOutDate)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Hotel)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Hotel.Id)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Room)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Room.Id)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Client)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Client.Id)
         </dd>
     </dl>
     

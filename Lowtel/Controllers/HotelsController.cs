@@ -9,7 +9,7 @@ using EF.AspNetCore.Models;
 using Lowtel.Models;
 
 namespace Lowtel.Controllers
-{
+{   
     public class HotelsController : Controller
     {
         private readonly LotelContext _context;
@@ -54,7 +54,7 @@ namespace Lowtel.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Name,Address,StarsRate,Description")] Hotel hotel)
+        public async Task<IActionResult> Create([Bind("Id,Name,State,Address,StarsRate,Description")] Hotel hotel)
         {
             if (ModelState.IsValid)
             {
@@ -86,7 +86,7 @@ namespace Lowtel.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Address,StarsRate,Description")] Hotel hotel)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,State,Address,StarsRate,Description")] Hotel hotel)
         {
             if (id != hotel.Id)
             {
@@ -148,6 +148,12 @@ namespace Lowtel.Controllers
         private bool HotelExists(int id)
         {
             return _context.Hotel.Any(e => e.Id == id);
+        }
+
+        // Select map cordinates of all the hotels.
+        public dynamic GetHotelsCords()
+        {
+            return _context.Hotel.Select(h => new { h.Name, h.CordX, h.CordY }).ToList();
         }
     }
 }

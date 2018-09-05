@@ -16,6 +16,8 @@
 #cover {
     width: 100%;
     height: 450px;
+    border-radius: 2em;
+    margin-top: 10px;
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -64,4 +66,12 @@ p {
 #bingMap {
     width: 100%;
     height: 400px;
+}
+
+dt {
+    text-align: left !important;
+}
+
+.link-text {
+    text-shadow: 3px 3px 4px grey;
 }

@@ -149,5 +149,10 @@ namespace Lowtel.Controllers
         {
             return _context.RoomType.Any(e => e.Id == id);
         }
+
+        public int GetRoomTypePrice(int roomTypeId)
+        {
+            return _context.RoomType.Where(r => r.Id == roomTypeId).Select(r => r.PriceForNight).FirstOrDefault();
+        }
     }
 }

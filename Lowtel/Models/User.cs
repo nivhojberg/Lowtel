@@ -9,13 +9,7 @@ namespace Lowtel.Models
     public class User
     {
         [Required, MaxLength(20)]
-        public string FirstName { get; set; }
-
-        [Required, MaxLength(20)]
-        public string LastName { get; set; }
-
-        [Required, MaxLength(20)]
-        public string Email { get; set; }
+        public string UserName { get; set; }
 
         [Required, DataType(DataType.Password),MinLength(6),MaxLength(10)]
         public string Password { get; set; }

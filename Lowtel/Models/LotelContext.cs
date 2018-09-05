@@ -29,6 +29,9 @@ namespace EF.AspNetCore.Models
             modelBuilder.Entity<Reservation>()
                 .HasKey(reservation => new { reservation.ClientId, reservation.HotelId, reservation.RoomId });
 
+            modelBuilder.Entity<User>()
+                .HasKey(user => new { user.UserName });
+
             // ----------- END define primary keys of the entityes -----------
 
             modelBuilder.Entity<Room>()
@@ -60,7 +63,8 @@ namespace EF.AspNetCore.Models
         public DbSet<Hotel> Hotel { get; set; }
         public DbSet<RoomType> RoomType { get; set; }
         public DbSet<Room> Room { get; set; }
-        public DbSet<Client> Client { get; set; }        
+        public DbSet<Client> Client { get; set; }
         public DbSet<Reservation> Reservation { get; set; }
+        public DbSet<User> User { get; set; }
     }
 }

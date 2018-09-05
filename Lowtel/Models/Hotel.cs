@@ -27,7 +27,8 @@ namespace Lowtel.Models
         [Required]
         public string Address { get; set; }  
         
-        [Display(Name = "Hotel Stars Rate")]        
+        [Display(Name = "Hotel Stars Rate")]
+        [Range(3, 5)]
         [Required]
         public int StarsRate { get; set; }
 

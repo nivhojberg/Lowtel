@@ -19,9 +19,8 @@ namespace Lowtel.Controllers
             public string userName { get; set; }
         };
 
-        public const string SessionName = "UserName";     
-        private readonly LotelContext _context;        
-        public static string userName = "";
+        public const string SessionName = "UserName";
+        private readonly LotelContext _context;     
 
         public UsersController(LotelContext context)
         {

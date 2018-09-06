@@ -165,7 +165,16 @@ namespace Lowtel.Controllers
 
         public int GetLastRoomNumberInHotel(int hotelId)
         {
-            return _context.Room.Where(room => (room.HotelId == hotelId)).Max(room => room.Id);
+            var query = _context.Room.Where(room => (room.HotelId == hotelId));
+
+            if (query.Any())
+            {
+                return query.Max(room => room.Id);
+            }
+            else
+            {
+                return 0;
+            }
         }
     }
 }

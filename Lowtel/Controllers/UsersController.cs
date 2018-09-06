@@ -37,7 +37,7 @@ namespace Lowtel.Controllers
             else
             {
                 return RedirectToAction("Index", "Home");
-            }            
+            }          
         }
 
         // GET: Users/Details/5
@@ -168,7 +168,14 @@ namespace Lowtel.Controllers
         // This function return the view of login page
         public IActionResult Login()
         {
-            return View();
+            if (!checkSession().isLogin)
+            {
+                return View();
+            }
+            else
+            {
+                return RedirectToAction("Index", "Home");
+            }
         }
 
         // This function signing in the user by checking if the user exist

@@ -1,6 +1,7 @@
 ﻿body {
     padding-top: 50px;
     padding-bottom: 20px;
+    font-family: Rubik;
 }
 
 .body-content {
@@ -73,5 +74,20 @@ dt {
 }
 
 .link-text {
-    text-shadow: 3px 3px 4px grey;
+    text-shadow: 2px 1px 4px grey;
+    transition: font-size 1s;
 }
+
+.link-text:hover {
+    font-size: 32px;
+}
+
+.main-titles-container {
+    column-count: 3;
+    column-rule: 2px solid #717171;
+    text-align: center;
+    font-size: 18px;
+    margin: 40px;
+    color: #717171;
+}
+

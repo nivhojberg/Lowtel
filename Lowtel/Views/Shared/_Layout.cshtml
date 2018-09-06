@@ -43,9 +43,9 @@
 					<li><a asp-controller="Reservations" asp-action="Index">Reservations</a></li>
 					<li><a asp-controller="Home" asp-action="About">About</a></li>
 					<li><a asp-controller="Home" asp-action="Contact">Contact</a></li>
-					<li style="position:absolute; right:20px;"><a asp-controller="Users" asp-action="Login" id="LogMSG"></a></li>
-					<li style="position:absolute; right:85px;"><a asp-controller="Users" id="WelcomeMsg"></a></li>
-					<li style="position:absolute; right:20px;"><a asp-controller="Users" asp-action="LogOff" id="LogOff"></a></li>
+					<li style="position:absolute; right:20px;"><a class="hide" asp-controller="Users" asp-action="Login" id="LogMSG"></a></li>
+					<li style="position:absolute; right:85px;"><a class="hide" asp-controller="Users" id="WelcomeMsg"></a></li>
+					<li style="position:absolute; right:20px;"><a class="hide" asp-controller="Users" asp-action="LogOff" id="LogOff"></a></li>
 				</ul>
 			</div>
 		</div>
@@ -93,13 +93,13 @@
 			url: '/Users/checkSession',
 			success: function (data) {            
 				// Checks if there is user that already logged on
-                if (data.isLogin) {	
+                if (data.isLogin) {
                     // Inject messages in JQuery.
-                    $("#WelcomeMsg").text("Welcome " + data.userName);					
-                    $("#LogOff").text("Log Off");
+                    $("#WelcomeMsg").removeClass("hide").text("Welcome " + data.userName);			
+                    $("#LogOff").removeClass("hide").text("Log Off");
 				}
-                else {
-                    $("#LogMSG").text("Manager Login");
+                else {                    
+                    $("#LogMSG").removeClass("hide").text("Manager Login");
 				}
 			},
             error: function (e) {

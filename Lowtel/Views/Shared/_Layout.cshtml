@@ -10,7 +10,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Lowtel - @ViewData["Title"]</title>
     <link rel="icon" href="~/images/Logo.png">
-    <link rel="stylesheet" href="~/fonts/fonts.css">
+    <link rel="stylesheet" href="~/fonts/fonts.css">    
     <environment include="Development">
         <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.css" />
         <link rel="stylesheet" href="~/css/site.css" />
@@ -35,18 +35,19 @@
 				<a asp-controller="Home" asp-action="Index" class="navbar-brand">Lowtel</a>
 			</div>
 			<div class="navbar-collapse collapse" id="nav">
-				<ul class="nav navbar-nav">
-					<li><a asp-controller="Hotels" asp-action="Index">Hotels</a></li>
-					<li><a asp-controller="Rooms" asp-action="Index">Rooms</a></li>
-					<li><a asp-controller="RoomTypes" asp-action="Index">Room-Types</a></li>
-					<li><a asp-controller="Clients" asp-action="Index">Clients</a></li>
-					<li><a asp-controller="Reservations" asp-action="Index">Reservations</a></li>
-					<li><a asp-controller="Home" asp-action="About">About</a></li>
-					<li><a asp-controller="Home" asp-action="Contact">Contact</a></li>
-					<li style="position:absolute; right:20px;"><a class="hide" asp-controller="Users" asp-action="Login" id="LogMSG"></a></li>
-					<li style="position:absolute; right:85px;"><a class="hide" asp-controller="Users" id="WelcomeMsg"></a></li>
-					<li style="position:absolute; right:20px;"><a class="hide" asp-controller="Users" asp-action="LogOff" id="LogOff"></a></li>
-				</ul>
+                <ul class="nav navbar-nav">
+                    <li><a asp-controller="Hotels" asp-action="Index">Hotels</a></li>
+                    <li><a asp-controller="Rooms" asp-action="Index">Rooms</a></li>
+                    <li><a asp-controller="RoomTypes" asp-action="Index">Room-Types</a></li>
+                    <li><a asp-controller="Clients" asp-action="Index">Clients</a></li>
+                    <li><a asp-controller="Reservations" asp-action="Index">Reservations</a></li>
+                    <li><a asp-controller="Statistics" asp-action="Index">Statistics</a></li>
+                    <li><a asp-controller="Home" asp-action="About">About</a></li>
+                    <li><a asp-controller="Home" asp-action="Contact">Contact</a></li>
+                    <li style="position:absolute; right:20px;"><a class="hide" asp-controller="Users" asp-action="Login" id="LogMSG"></a></li>
+                    <li style="position:absolute; right:85px;"><a class="hide" asp-controller="Users" id="WelcomeMsg"></a></li>
+                    <li style="position:absolute; right:20px;"><a class="hide" asp-controller="Users" asp-action="LogOff" id="LogOff"></a></li>
+                </ul>
 			</div>
 		</div>
 	</nav>

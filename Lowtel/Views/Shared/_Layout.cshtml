@@ -1,7 +1,7 @@
 ﻿@using Lowtel.Controllers
 @using Microsoft.AspNetCore.Http;
 @{
-	ViewData["LogMSG"] = "";
+    ViewData["LogMSG"] = "";
 }
 <!DOCTYPE html>
 <html>
@@ -44,6 +44,13 @@
                     <li><a asp-controller="Statistics" asp-action="Index">Statistics</a></li>
                     <li><a asp-controller="Home" asp-action="About">About</a></li>
                     <li><a asp-controller="Home" asp-action="Contact">Contact</a></li>
+                    @{
+                        if (Context.Session.GetString(UsersController.SessionName) != null)
+                        {
+                            <li><a asp-controller="Statistics" asp-action="Index">Statistics</a></li>                            
+                        }
+                    }
+
                     <li style="position:absolute; right:20px;"><a class="hide" asp-controller="Users" asp-action="Login" id="LogMSG"></a></li>
                     <li style="position:absolute; right:85px;"><a class="hide" asp-controller="Users" id="WelcomeMsg"></a></li>
                     <li style="position:absolute; right:20px;"><a class="hide" asp-controller="Users" asp-action="LogOff" id="LogOff"></a></li>

@@ -5,25 +5,83 @@
 <h2>@ViewData["Title"]</h2>
 
 <div class="stat-chart">
-    <h3>Hotels amount by stars rate</h3><br />
-    <p>This pie diagram represents the distribution of hotels according to their stars rate</p>    
-    <div class="pie"></div>
-</div>
-
-<div class="stat-chart">
     <h3>Hotels by rooms amount</h3><br />
-    <p>The following chart compares hotels according to their rooms amount</p>
+    <p>This chart compares hotels according to their rooms amount.</p>
     <div class="bar"></div>
 </div>
 
-<script src="https://d3js.org/d3.v4.min.js"></script>
+<div class="stat-chart">
+    <h3>Hotels amount by stars rate</h3><br />
+    <p>This pie diagram represents the distribution of hotels according to their stars rate.</p>
+    <div id="tooltip"></div>
+    <div class="pie"></div>
+</div>
 
-<script>    
-    function drawPie(data) {
+<script src="https://d3js.org/d3.v5.min.js"></script>
+
+<script>
+
+    function drawBarChart(data) {
+        // Define css for the graph.
+        var margin = { top: 20, right: 20, bottom: 30, left: 40 },
+            width = 960 - margin.left - margin.right,
+            height = 380 - margin.top - margin.bottom;
+
+        // Set the ranges of scales.
+        var x = d3.scaleBand()
+            .range([0, width])
+            .padding(0.1);
+        var y = d3.scaleLinear()
+            .range([height, 0]);
+
+        // Get 10 colors from palette.
+        var color = d3.schemeCategory10;
+
+        // Append the svg object to the body of the page.
+        // Append a 'group' element to 'svg'.
+        // Moves the 'group' element to the top left margin.
+        var svg = d3.select(".bar").append("svg")
+            .attr("width", width + margin.left + margin.right)
+            .attr("height", height + margin.top + margin.bottom)
+            .append("g")
+            .attr("transform",
+            "translate(" + margin.left + "," + margin.top + ")");
+
+        // Scaling the ranges for the data.
+        x.domain(data.map(function (d) { return d.name; }));
+        y.domain([0, d3.max(data, function (d) { return d.roomsAmount; })]);
+
+        // Append the rectangles for the bars.
+        svg.selectAll(".bar")
+            .data(data)
+            .enter().append("rect")
+            .attr("class", "bar")
+            .attr("x", function (d) { return x(d.name); })
+            .attr("width", x.bandwidth())
+            .attr("y", function (d) { return y(d.roomsAmount); })
+            .attr("height", function (d) { return height - y(d.roomsAmount); })
+            .attr('fill', function (d, i) { return color[i]; });
+
+        // Add x Axis
+        svg.append("g")
+            .attr("transform", "translate(0," + height + ")")
+            .call(d3.axisBottom(x));
+
+        // Add y Axis
+        svg.append("g")
+            .call(d3.axisLeft(y).ticks(4))
+            .append("text")
+            .attr("transform", "rotate(-90)")
+            .attr("y", 6)
+            .attr("dy", "-35px")
+            .text("Rooms amount");
+    }
+
+    function drawPieChart(data) {
 
         // Defing height and width to the pie.
-        var h = 200;
-        var w = 200;
+        var h = 300;
+        var w = 300;
 
         // Define inner and outer radius for the pie.
         var innerRadius = w / 4;
@@ -55,6 +113,20 @@
             .append('g')
             .attr('class', 'arc')
             .attr('transform', 'translate(' + outerRadius + ', ' + outerRadius + ')')
+            .on("mouseover", function (d) {
+                d3.select('#tooltip')
+                    .style("visibility", "visible")
+                    .text('Starts rate: ' + d.data.starsRate);
+            })
+            .on("mousemove", function () {
+                d3.select('#tooltip')
+                    .style("top", (event.pageY - 10) + "px")
+                    .style("left", (event.pageX + 10) + "px");
+            })
+            .on("mouseout", function () {
+                d3.select('#tooltip')
+                    .style("visibility", "hidden");
+            });
 
         // Add path to groups.
         arcs.append('path')
@@ -75,63 +147,7 @@
 
     }
 
-
-    function drawBar(data) {
-        var margin = { top: 20, right: 20, bottom: 30, left: 40 },
-            width = 960 - margin.left - margin.right,
-            height = 380 - margin.top - margin.bottom;
-
-        // Set the ranges.
-        var x = d3.scaleBand()
-            .range([0, width])
-            .padding(0.1);
-        var y = d3.scaleLinear()
-            .range([height, 0]);
-
-        // Get 20 colors.
-        var color = d3.schemeCategory20;
-
-        // Append the svg object to the body of the page.
-        // Append a 'group' element to 'svg'.
-        // Moves the 'group' element to the top left margin.
-        var svg = d3.select(".bar").append("svg")
-            .attr("width", width + margin.left + margin.right)
-            .attr("height", height + margin.top + margin.bottom)
-            .append("g")
-            .attr("transform",
-            "translate(" + margin.left + "," + margin.top + ")");
-
-        // Scaling the range of the data in the domains.
-        x.domain(data.map(function (d) { return d.name; }));
-        y.domain([0, d3.max(data, function (d) { return d.roomsAmount; })]);
-
-        // Append the rectangles for the bar chart
-        var bars = svg.selectAll(".bar")
-            .data(data)
-            .enter().append("rect")
-            .attr("class", "bar")
-            .attr("x", function (d) { return x(d.name); })
-            .attr("width", x.bandwidth())
-            .attr("y", function (d) { return y(d.roomsAmount); })
-            .attr("height", function (d) { return height - y(d.roomsAmount); })
-            .attr('fill', function (d, i) { return color[i]; });
-
-        // Add the x Axis
-        svg.append("g")
-            .attr("transform", "translate(0," + height + ")")
-            .call(d3.axisBottom(x));
-
-        // Add the y Axis
-        svg.append("g")
-            .call(d3.axisLeft(y).ticks(4))
-            .append("text")
-            .attr("transform", "rotate(-90)")
-            .attr("y", 6)
-            .attr("dy", "-35px")
-            .text("Rooms Amount");
-    }
-
     // Draws the graphs according to the data from the controller.
-    drawPie(JSON.parse('@Html.Raw(ViewBag.starsRateInHotelsData)'));    
-    drawBar(JSON.parse('@Html.Raw(ViewBag.roomsAmountInHotelsData)'));
+    drawBarChart(JSON.parse('@Html.Raw(ViewBag.roomsAmountInHotelsData)'));
+    drawPieChart(JSON.parse('@Html.Raw(ViewBag.starsRateInHotelsData)'));    
 </script>

@@ -23,7 +23,7 @@ namespace Lowtel.Controllers
         // GET: Statistics
         public ActionResult Index()
         {
-            if (HttpContext.Session.GetString(UsersController.SessionName) != null || true)
+            if (HttpContext.Session.GetString(UsersController.SessionName) != null)
             {
                 var starsRate = _context.Hotel.GroupBy(h => h.StarsRate).Select(h => new { starsRate = (h.Key), count = h.Count() }).ToList();
                 var starsRateData = JsonConvert.SerializeObject(starsRate);

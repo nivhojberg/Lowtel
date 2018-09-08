@@ -89,6 +89,7 @@ dt {
     font-size: 18px;
     margin: 40px;
     color: #717171;
+    -webkit-user-select: none;
 }
 
 video {
@@ -97,4 +98,25 @@ video {
 
 .hide {
     display: none;
+}
+
+#tooltip {
+    visibility: hidden;
+    position: absolute;
+    line-height: 1;
+    font-weight: bold;
+    padding: 12px;
+    background: rgba(0, 0, 0, 0.5);
+    color: #fff;
+    border-radius: 6px;
+}
+
+.arc {
+    fill: white;
+}
+
+.bar text {
+    fill: black;
+    font-size: 14px;
+    text-anchor: end;
 }

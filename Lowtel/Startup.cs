@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using EF.AspNetCore.Models;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -9,6 +10,8 @@ using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.EntityFrameworkCore;
+using System.Reflection;
 
 namespace Lowtel
 {
@@ -31,8 +34,24 @@ namespace Lowtel
                 options.MinimumSameSitePolicy = SameSiteMode.None;
             });
 
+            services.AddDistributedMemoryCache();
 
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+            services.AddSession(options =>
+            {
+                // Set a short timeout for easy testing.
+                options.IdleTimeout = TimeSpan.FromSeconds(10);
+                options.Cookie.HttpOnly = true;
+            });
+
+
+            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);        
+
+            // Get DB connection string from appsetting json and replace the DB file path,
+            // with the current project folder.
+            string connection = Configuration.GetConnectionString("LowtelContext");            
+            connection = connection.Replace("{current_dir}", Environment.CurrentDirectory);
+            
+            services.AddDbContext<LotelContext>(options => options.UseSqlServer(connection));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -51,12 +70,25 @@ namespace Lowtel
             app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseCookiePolicy();
+            app.UseSession();
 
             app.UseMvc(routes =>
             {
                 routes.MapRoute(
                     name: "default",
                     template: "{controller=Home}/{action=Index}/{id?}");
+
+                routes.MapRoute(
+                    name: "RoomsCreate",
+                    template: "{controller=Rooms/Create}/{action=Create}");
+
+                routes.MapRoute(
+                    name: "RoomsEdit",
+                    template: "{controller=Rooms/Edit}/{action=Edit}/{id?}/{hotelId?}");
+
+                routes.MapRoute(
+                    name: "RoomsDetails",
+                    template: "{controller=Rooms/Details}/{action=Details}/{id?}/{hotelId?}");
             });
         }
     }

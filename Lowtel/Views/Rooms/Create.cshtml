@@ -1,0 +1,85 @@
+﻿@model Lowtel.Models.Room
+
+@{
+    ViewData["Title"] = "Create Room";
+}
+
+<h2>@ViewData["Title"]</h2>
+
+<h4>Room</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Create">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="Id" class="control-label"></label>
+                <input id="room-number" asp-for="Id" class="form-control" />
+                <span asp-validation-for="Id" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Hotel" class="control-label"></label>
+                <select id="hotel-id" onchange="GetFreeRoom(this.value)" asp-for="HotelId" class="form-control" asp-items="ViewBag.HotelId"></select>
+            </div>
+            <div class="form-group">
+                <label asp-for="RoomType" class="control-label"></label>
+                <select id="room-type-id" asp-for="RoomTypeId" onchange="GetRoomTypePrice(this.value)" class="form-control" asp-items="ViewBag.RoomTypeId"></select>
+            </div>
+            <div class="form-group">
+                <label asp-for="RoomType.PriceForNight" class="control-label"></label>
+                <div id="room-price"></div>
+            </div>
+            <div class="form-group">
+                <div class="checkbox">
+                    <label>
+                        <input asp-for="IsFree" /> @Html.DisplayNameFor(model => model.IsFree)
+                    </label>
+                </div>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-default" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+<script>
+    GetFreeRoom($("#hotel-id").val());
+    GetRoomTypePrice($("#room-type-id").val());
+
+    function GetFreeRoom(hotelId) {
+        $.ajax({
+            type: "GET",
+            url: "/Rooms/GetLastRoomNumberInHotel?hotelId=" + hotelId,
+            success: function (lastRoomNumber) {     
+                var newRoomNumberSeq = lastRoomNumber + 1;
+                $("#room-number").val(newRoomNumberSeq);
+                $("#room-number").attr("min", newRoomNumberSeq);
+            },
+            error: function (err) {
+                console.error(err);
+            }
+        });
+    }   
+
+    function GetRoomTypePrice(roomTypeId) {
+        $.ajax({
+            type: "GET",
+            url: "/RoomTypes/GetRoomTypePrice?roomTypeId=" + roomTypeId,
+            success: function (price) {
+                $("#room-price").html(price);                
+            },
+            error: function (err) {
+                console.error(err);
+            }
+        });
+    }
+</script>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

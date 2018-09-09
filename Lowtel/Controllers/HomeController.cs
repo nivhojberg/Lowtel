@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Lowtel.Models;
+using Microsoft.AspNetCore.Http;
 
 namespace Lowtel.Controllers
 {
@@ -26,11 +27,6 @@ namespace Lowtel.Controllers
         {
             ViewData["Message"] = "Your contact page.";
 
-            return View();
-        }
-
-        public IActionResult Privacy()
-        {
             return View();
         }
 

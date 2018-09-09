@@ -1,0 +1,50 @@
+﻿@model Lowtel.Models.Reservation
+
+@{
+    ViewData["Title"] = "Create Reservation";
+}
+
+<h2>@ViewData["Title"]</h2>
+
+<h4>Reservation</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Create">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="ClientId" class="control-label"></label>
+                <select asp-for="ClientId" class ="form-control" asp-items="ViewBag.ClientId"></select>
+            </div>
+            <div class="form-group">
+                <label asp-for="HotelId" class="control-label"></label>
+                <select asp-for="HotelId" class ="form-control" asp-items="ViewBag.HotelId"></select>
+            </div>
+            <div class="form-group">
+                <label asp-for="RoomId" class="control-label"></label>
+                <select asp-for="RoomId" class ="form-control" asp-items="ViewBag.RoomId"></select>
+            </div>
+            <div class="form-group">
+                <label asp-for="CheckInDate" class="control-label"></label>
+                <input asp-for="CheckInDate" class="form-control" />
+                <span asp-validation-for="CheckInDate" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="CheckOutDate" class="control-label"></label>
+                <input asp-for="CheckOutDate" class="form-control" />
+                <span asp-validation-for="CheckOutDate" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-default" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

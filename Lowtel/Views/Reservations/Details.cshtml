@@ -1,0 +1,48 @@
+﻿@model Lowtel.Models.Reservation
+
+@{
+    ViewData["Title"] = "Reservation Details";
+}
+
+<h2>@ViewData["Title"]</h2>
+
+<div>
+    <h4>Reservation</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.CheckInDate)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.CheckInDate)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.CheckOutDate)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.CheckOutDate)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Hotel)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Hotel.Id)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Room)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Room.Id)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Client)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Client.Id)
+        </dd>
+    </dl>
+</div>
+<div>
+    @Html.ActionLink("Edit", "Edit", new { /* id = Model.PrimaryKey */ }) |
+    <a asp-action="Index">Back to List</a>
+</div>

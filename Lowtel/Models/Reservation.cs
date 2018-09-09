@@ -9,14 +9,26 @@ namespace Lowtel.Models
     public class Reservation
     {
         [Display(Name = "Client Id")]
+        [StringLength(10, MinimumLength = 9)]
+        [Required]
         public string ClientId { get; set; }
+
         [Display(Name = "Hotel Id")]
+        [Required]
         public int HotelId { get; set; }
+
         [Display(Name = "Room Id")]
+        [Range(1, 999)]
+        [Required]
         public int RoomId { get; set; }
+
         [Display(Name = "Check In Date")]
+        [DataType(DataType.Date)]
+        [Required]
         public DateTime CheckInDate { get; set; }
+
         [Display(Name = "Check Out Date")]
+        [DataType(DataType.Date)]
         public DateTime CheckOutDate { get; set; }
 
         public Hotel Hotel { get; set; }

@@ -14,4 +14,14 @@
     <Folder Include="Views\Client\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Include="wwwroot\fonts\Cyrillic_Rubik.woff2" />
+    <None Include="wwwroot\fonts\fonts.css" />
+    <None Include="wwwroot\fonts\Hebrew_Rubik.woff2" />
+    <None Include="wwwroot\fonts\Latin_Ext_Rubik.woff2" />
+    <None Include="wwwroot\fonts\Latin_Rubik.woff2" />
+    <None Include="wwwroot\fonts\Material_Icons.woff2" />
+    <None Include="wwwroot\fonts\Mona_Shark.woff" />
+  </ItemGroup>
+
 </Project>

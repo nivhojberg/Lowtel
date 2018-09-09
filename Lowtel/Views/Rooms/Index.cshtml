@@ -16,10 +16,16 @@
                 @Html.DisplayNameFor(model => model.Id)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.HotelId)
+                @Html.DisplayNameFor(model => model.Hotel.Name)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.RoomTypeId)
+                @Html.DisplayNameFor(model => model.Hotel.State)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.RoomType.Name)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.RoomType.PriceForNight)
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.IsFree)
@@ -34,10 +40,16 @@
                 @Html.DisplayFor(modelItem => item.Id)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.HotelId)
+                @Html.DisplayFor(modelItem => item.Hotel.Name)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.RoomTypeId)
+                @Html.DisplayFor(modelItem => item.Hotel.State)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.RoomType.Name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.RoomType.PriceForNight)
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.IsFree)

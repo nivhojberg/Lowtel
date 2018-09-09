@@ -54,8 +54,11 @@ namespace Lowtel.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Name,State,Address,StarsRate,Description")] Hotel hotel)
+        public async Task<IActionResult> Create([Bind("Id,Name,State,Address,StarsRate,Description,CordX,CordY")] Hotel hotel)
         {
+            // Get hotel last seq id.
+            hotel.Id = this.GetLastHotelIdSeq() + 1;
+
             if (ModelState.IsValid)
             {
                 _context.Add(hotel);
@@ -86,7 +89,7 @@ namespace Lowtel.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,State,Address,StarsRate,Description")] Hotel hotel)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,State,Address,StarsRate,Description,CordX,CordY")] Hotel hotel)
         {
             if (id != hotel.Id)
             {
@@ -154,6 +157,11 @@ namespace Lowtel.Controllers
         public dynamic GetHotelsCords()
         {
             return _context.Hotel.Select(h => new { h.Name, h.CordX, h.CordY }).ToList();
+        }
+
+        private int GetLastHotelIdSeq()
+        {
+            return _context.Hotel.Select(h => h.Id).Max();
         }
     }
 }

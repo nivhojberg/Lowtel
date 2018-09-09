@@ -10,13 +10,13 @@
     </div>
     <div class="col-md-3">
         <div class="index-menu-box">
-            <a asp-controller="Hotels" asp-action="Index"><h2>Hotels</h2></a>
+            <a asp-controller="Hotels" asp-action="Index"><h2 class="link-text">Hotels</h2></a>
             <p>
                 Check our high quality hotels with low prices across the world.
             </p>
         </div>
         <div class="index-menu-box">
-            <a asp-controller="Home" asp-action="About"><h2>About</h2></a>
+            <a asp-controller="Home" asp-action="About"><h2 class="link-text">About</h2></a>
             <p>
                 Read more information about our company.
             </p>
@@ -27,13 +27,13 @@
     </div>
     <div class="col-md-3">
         <div class="index-menu-box">
-            <a asp-controller="Reservations" asp-action="Index"><h2>Reservations</h2></a>
+            <a asp-controller="Reservations" asp-action="Index"><h2 class="link-text">Reservations</h2></a>
             <p>
                 Reserve your next vacation right now.
             </p>
         </div>
         <div class="index-menu-box">
-            <a asp-controller="Home" asp-action="Contact"><h2>Contact</h2></a>
+            <a asp-controller="Home" asp-action="Contact"><h2 class="link-text">Contact</h2></a>
             <p>
                 Get in touch with us by address, phone or email.
             </p>
@@ -42,6 +42,11 @@
     <div class="col-md-1">
     </div>
 </div>
+<div class="main-titles-container">
+    <div>Best chef restaurants</div>
+    <div>Hotels in attractive areas</div>
+    <div>Cheapest prices</div>
+</div>
 <div>
     <h2>Hotels Map</h2>
     <p>
@@ -49,14 +54,14 @@
     </p>
     <div id="bingMap"></div>
 
-    <script type="text/javascript">     
+    <script type="text/javascript">
 
         function bingMapCallback() {
             var map = new Microsoft.Maps.Map(document.getElementById("bingMap"), {
                 credentials: '8jdU9kPTCEzVmyT3jRkU~rm3ZVd7SbAdEPp8lygIm8A~AuLnSHivAFETHCaowja_dJ75w4ff92UyxgW5RNfOMUaAVfTUeYeCj5oKEzjm4ItE',
                 center: new Microsoft.Maps.Location(0, 0),
                 zoom: 1,
-            });           
+            });
 
             // Load hotel cordinates in order to point them on the map.
             $.ajax({
@@ -77,3 +82,8 @@
             src="https://www.bing.com/api/maps/mapcontrol?callback=bingMapCallback&key=8jdU9kPTCEzVmyT3jRkU~rm3ZVd7SbAdEPp8lygIm8A~AuLnSHivAFETHCaowja_dJ75w4ff92UyxgW5RNfOMUaAVfTUeYeCj5oKEzjm4ItE&setLang=en"
             async defer></script>
 </div>
+
+<video width="100%" height="400" controls>
+    <source src="~/movies/preview.mp4" type="video/mp4">    
+    Your browser does not support the video tag.
+</video>

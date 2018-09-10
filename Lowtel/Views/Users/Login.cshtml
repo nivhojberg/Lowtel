@@ -10,9 +10,9 @@
 	<div class="col-md-4">
 		<form asp-action="Login">
 			<div class="form-group">
-                <p style="color:red!important; margin: 0;text-align:center;font-size:15px;">
+                <div class="ErrMag">
                     @ViewData["ErrMessage"]
-                </p>
+                </div>
             </div>
             <div class="form-group">
                 <label asp-for="UserName" class="control-label"></label>

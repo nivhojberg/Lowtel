@@ -170,6 +170,7 @@ namespace Lowtel.Controllers
         // return: redirection to homePage if the user success to login, error if not
         public IActionResult Login([Bind("UserName,Password")] User user)
         {
+            ViewData["ErrMessage"] = "";
             if (checkSession().isLogin)
             {
                 return RedirectToAction("Index", "Home");

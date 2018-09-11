@@ -61,8 +61,8 @@ namespace Lowtel
                 options.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
             }).AddFacebook(facebookOptions =>
             {
-                facebookOptions.AppId = Configuration["Authentication:Facebook:AppId"];
-                facebookOptions.AppSecret = Configuration["Authentication:Facebook:AppSecret"];
+                facebookOptions.AppId = "381667942656976";
+                facebookOptions.AppSecret = "05551e8a47bf6fa9eabb1c0f6b22bd7f";
             }).AddCookie();
 
             services.AddMvc();

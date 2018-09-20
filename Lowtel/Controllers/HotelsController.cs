@@ -163,5 +163,15 @@ namespace Lowtel.Controllers
         {
             return _context.Hotel.Select(h => h.Id).Max();
         }
+
+        [HttpGet]
+        public string GetHotelCityNameByCords()
+        {
+            double x = Double.Parse(Request.Query["lat"].ToString());
+            double y = Double.Parse(Request.Query["lon"].ToString());
+            string address = _context.Hotel.Select(h => new { h.Address, h.CordX, h.CordY }).ToList()
+                .Where(h => h.CordX > x - 5 && h.CordX < x + 5 && h.CordY > y - 5 && h.CordY < y + 5).FirstOrDefault().Address;
+            return address.Substring(0, address.IndexOf(','));
+        }
     }
 }

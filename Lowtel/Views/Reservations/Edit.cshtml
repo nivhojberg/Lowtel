@@ -1,41 +1,47 @@
 ﻿@model Lowtel.Models.Reservation
-
 @{
-    ViewData["Title"] = "Edit Reservation";
+    ViewData["Title"] = "Check Out Reservation";
 }
-
 <h2>@ViewData["Title"]</h2>
-
-<h4>Reservation</h4>
 <hr />
+<div class="ErrMsg">
+    @TempData["ErrMessageReservation"]
+</div>
+<br />
 <div class="row">
     <div class="col-md-4">
         <form asp-action="Edit">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input type="hidden" asp-for="ClientId" />
-            <input type="hidden" asp-for="HotelId" />
-            <input type="hidden" asp-for="RoomId" />
+            <input type="hidden" id="client-id" asp-for="ClientId" />
+            <input type="hidden" id="hotel-id" asp-for="HotelId" />
+            <input type="hidden" id="room-id" asp-for="RoomId" />
+            <input type="hidden" id="checkin-date" asp-for="CheckInDate" />
+            <h4>Reservation</h4>
+            <hr /> 
             <div class="form-group">
-                <label asp-for="CheckInDate" class="control-label"></label>
-                <input asp-for="CheckInDate" class="form-control" />
-                <span asp-validation-for="CheckInDate" class="text-danger"></span>
+                <labal>Check in date: </labal>
+                       @Html.DisplayFor(model => model.CheckInDate)
             </div>
             <div class="form-group">
-                <label asp-for="CheckOutDate" class="control-label"></label>
-                <input asp-for="CheckOutDate" class="form-control" />
-                <span asp-validation-for="CheckOutDate" class="text-danger"></span>
+                <label>Price per night: </label>
+                @ViewBag.pricePerNight NIS
             </div>
             <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-default" />
+                <label>Number of nights: </label> @ViewBag.nights
+            </div>
+            <div class="form-group">
+                <label>Total : </label>
+                @ViewBag.price NIS
+            </div>
+            <div class="form-group">
+                <input type="submit" value="CheckOut" class="btn btn-default" />
             </div>
         </form>
     </div>
 </div>
-
 <div>
     <a asp-action="Index">Back to List</a>
 </div>
-
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
 }

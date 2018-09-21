@@ -27,7 +27,7 @@ namespace EF.AspNetCore.Models
                 .HasKey(client => new { client.Id });
 
             modelBuilder.Entity<Reservation>()
-                .HasKey(reservation => new { reservation.ClientId, reservation.HotelId, reservation.RoomId });
+                .HasKey(reservation => new { reservation.ClientId, reservation.HotelId, reservation.RoomId, reservation.CheckInDate});
 
             modelBuilder.Entity<User>()
                 .HasKey(user => new { user.UserName });

@@ -104,6 +104,18 @@ namespace Lowtel
                 routes.MapRoute(
                     name: "RoomsDetails",
                     template: "{controller=Rooms/Details}/{action=Details}/{id?}/{hotelId?}");
+
+                routes.MapRoute(
+                    name: "ReservationsEdit",
+                    template: "{controller=Reservations/Edit}/{action=Edit}/{ClientId}/{RoomId}/{HoteId}/{CheckInDate}");
+
+                routes.MapRoute(
+                    name: "ReservationsDelete",
+                    template: "{controller=Reservations/Delete}/{action=Edit}/{ClientId}/{RoomId}/{HoteId}/{CheckInDate}");
+
+                routes.MapRoute(
+                name: "ReservationsDetails",
+                template: "{controller=Reservations/Details}/{action=Edit}/{ClientId}/{RoomId}/{HoteId}/{CheckInDate}");
             });
         }
     }

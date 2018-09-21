@@ -121,9 +121,10 @@ video {
     text-anchor: end;
 }
 
-.ErrMag {
-    font-style:oblique;
+.ErrMsg {
+    font-style:normal;
     margin: 0;
+    color:red !important;
     text-align: center;
     font-size: 15px;
 }

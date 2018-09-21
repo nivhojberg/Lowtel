@@ -40,7 +40,7 @@
                 @Html.DisplayFor(modelItem => item.CheckOutDate)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Hotel.Id)
+                @Html.DisplayFor(modelItem => item.Hotel.Name)
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.Room.Id)
@@ -49,9 +49,12 @@
                 @Html.DisplayFor(modelItem => item.Client.Id)
             </td>
             <td>
-                @Html.ActionLink("Edit", "Edit", new { /* id=item.PrimaryKey */ }) |
-                @Html.ActionLink("Details", "Details", new { /* id=item.PrimaryKey */ }) |
-                @Html.ActionLink("Delete", "Delete", new { /* id=item.PrimaryKey */ })
+                <a asp-controller="Reservations" asp-action="Details" asp-route-ClientId="@item.ClientId" asp-route-RoomId="@item.RoomId" asp-route-HotelId="@item.HotelId" asp-route-CheckInDate="@item.CheckInDate">Details</a> |
+                <a asp-controller="Reservations" asp-action="Delete" asp-route-ClientId="@item.ClientId" asp-route-RoomId="@item.RoomId" asp-route-HotelId="@item.HotelId" asp-route-CheckInDate="@item.CheckInDate">Delete</a> |
+                @if (item.CheckOutDate == null)
+                {
+                    <a asp-controller="Reservations" asp-action="Edit" asp-route-ClientId="@item.ClientId" asp-route-RoomId="@item.RoomId" asp-route-HotelId="@item.HotelId" asp-route-CheckInDate="@item.CheckInDate">Check Out</a>
+                }
             </td>
         </tr>
 }

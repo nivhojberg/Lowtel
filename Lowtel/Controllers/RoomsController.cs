@@ -176,5 +176,25 @@ namespace Lowtel.Controllers
                 return 0;
             }
         }
+
+        public dynamic GetFreeRoomByParms(int hotelId,int roomTypeId)
+        {          
+            return _context.Room.Where(e => (e.HotelId == hotelId) &&
+            (e.RoomTypeId == roomTypeId) && (e.IsFree == true)).ToList();
+        }
+
+        public async Task EditFreeByIdAsync(int roomId, int hotelId, DateTime? CheckOutDate)
+        {
+            if (CheckOutDate == null)
+            {
+                var room = await _context.Room.FindAsync(roomId, hotelId);
+                if (room != null)
+                {
+                    room.IsFree = !room.IsFree;
+                    _context.Room.Update(room);
+                    await _context.SaveChangesAsync();
+                }
+            }
+        }
     }
 }

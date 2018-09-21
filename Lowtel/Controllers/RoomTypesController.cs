@@ -154,5 +154,10 @@ namespace Lowtel.Controllers
         {
             return _context.RoomType.Where(r => r.Id == roomTypeId).Select(r => r.PriceForNight).FirstOrDefault();
         }
+
+        public dynamic GetLastTypeId()
+        {
+            return _context.RoomType.Select(r => r.Id).Max();
+        }
     }
 }

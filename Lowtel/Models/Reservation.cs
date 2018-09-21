@@ -9,7 +9,6 @@ namespace Lowtel.Models
     public class Reservation
     {
         [Display(Name = "Client Id")]
-        [StringLength(10, MinimumLength = 9)]
         [Required]
         public string ClientId { get; set; }
 
@@ -29,7 +28,7 @@ namespace Lowtel.Models
 
         [Display(Name = "Check Out Date")]
         [DataType(DataType.Date)]
-        public DateTime CheckOutDate { get; set; }
+        public Nullable<DateTime> CheckOutDate { get; set; }
 
         public Hotel Hotel { get; set; }
         public Room Room { get; set; }

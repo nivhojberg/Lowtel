@@ -135,13 +135,21 @@ namespace Lowtel.Controllers
                 return NotFound();
             }
 
+            bool isRoomOnReservation =
+                (_context.Reservation.Where(r => r.RoomId == id && r.HotelId == hotelId).Count() > 0);
+
             var room = await _context.Room
                 .Include(r => r.Hotel)
                 .Include(r => r.RoomType)
                 .FirstOrDefaultAsync(m => (m.Id == id) && (m.HotelId == hotelId));
+
             if (room == null)
             {
                 return NotFound();
+            }
+            else if (isRoomOnReservation)
+            {
+                return BadRequest("This room is in use on reservation");
             }
 
             return View(room);

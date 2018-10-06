@@ -124,11 +124,19 @@ namespace Lowtel.Controllers
                 return NotFound();
             }
 
+            bool isRoomTypeOnReservation =
+                (_context.Reservation.Where(r => r.Room.RoomType.Id == id).Count() > 0);
+
             var roomType = await _context.RoomType
                 .FirstOrDefaultAsync(m => m.Id == id);
+
             if (roomType == null)
             {
                 return NotFound();
+            }
+            else if (isRoomTypeOnReservation)
+            {
+                return BadRequest("This room-type is in use on reservation");
             }
 
             return View(roomType);

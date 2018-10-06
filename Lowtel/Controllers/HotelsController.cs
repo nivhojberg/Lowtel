@@ -127,11 +127,19 @@ namespace Lowtel.Controllers
                 return NotFound();
             }
 
+            bool isHotelOnReservation =
+                (_context.Reservation.Where(r => r.HotelId== id).Count() > 0);
+
             var hotel = await _context.Hotel
                 .FirstOrDefaultAsync(m => m.Id == id);
+
             if (hotel == null)
             {
                 return NotFound();
+            }
+            else if (isHotelOnReservation)
+            {
+                return BadRequest("This hotel is in use on reservation");
             }
 
             return View(hotel);

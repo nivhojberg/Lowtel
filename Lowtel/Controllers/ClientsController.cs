@@ -124,11 +124,19 @@ namespace Lowtel.Controllers
                 return NotFound();
             }
 
+            bool isClientOnReservation =
+                (_context.Reservation.Where(r => r.ClientId == id).Count() > 0);
+
             var client = await _context.Client
                 .FirstOrDefaultAsync(m => m.Id == id);
+
             if (client == null)
             {
                 return NotFound();
+            }
+            else if (isClientOnReservation)
+            {
+                return BadRequest("This client is in use on reservation");
             }
 
             return View(client);

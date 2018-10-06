@@ -45,15 +45,14 @@
                     <li><a asp-controller="Hotels" asp-action="Index">Hotels</a></li>
                     <li><a asp-controller="Rooms" asp-action="Index">Rooms</a></li>
                     <li><a asp-controller="RoomTypes" asp-action="Index">Room-Types</a></li>
-                    <li><a asp-controller="Clients" asp-action="Index">Clients</a></li>
-                    <li><a asp-controller="Reservations" asp-action="Index">Reservations</a></li>
-                    <li><a asp-controller="Statistics" asp-action="Index">Statistics</a></li>
-                    <li><a asp-controller="Home" asp-action="About">About</a></li>
-                    <li><a asp-controller="Home" asp-action="Contact">Contact</a></li>
                     @if (Context.Session.GetString(UsersController.SessionName) != null)
                     {
+                        <li><a asp-controller="Clients" asp-action="Index">Clients</a></li>
+                        <li><a asp-controller="Reservations" asp-action="Index">Reservations</a></li>
                         <li><a asp-controller="Statistics" asp-action="Index">Statistics</a></li>
                     }
+                    <li><a asp-controller="Home" asp-action="About">About</a></li>
+                    <li><a asp-controller="Home" asp-action="Contact">Contact</a></li>
                     @if (User.Identity.IsAuthenticated)
                     {
                         <li><a asp-area="" asp-controller="Auth" asp-action="SignOut">Sign out</a></li>

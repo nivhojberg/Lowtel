@@ -1,4 +1,6 @@
 ﻿@model IEnumerable<Lowtel.Models.Room>
+@using Lowtel.Controllers
+@using Microsoft.AspNetCore.Http;
 
 @{
     ViewData["Title"] = "Rooms";
@@ -6,9 +8,13 @@
 
 <h2>@ViewData["Title"]</h2>
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
+@if (Context.Session.GetString(UsersController.SessionName) != null)
+{
+    <p>
+        <a asp-action="Create">Create New</a>
+    </p>
+}
+
 <table class="table">
     <thead>
         <tr>
@@ -34,32 +40,37 @@
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Id)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Hotel.Name)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Hotel.State)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.RoomType.Name)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.RoomType.PriceForNight)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.IsFree)
-            </td>
-            <td>
-                @Html.ActionLink("Edit", "Edit/" + item.Id + "/" + item.HotelId) |
-                @Html.ActionLink("Details", "Details/" + item.Id + "/" + item.HotelId) |
-                @Html.ActionLink("Delete", "Delete/" + item.Id + "/" + item.HotelId)
-            </td>
-        </tr>
-}
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Id)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Hotel.Name)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Hotel.State)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.RoomType.Name)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.RoomType.PriceForNight)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.IsFree)
+                </td>
+                <td>
+                    @if (Context.Session.GetString(UsersController.SessionName) != null)
+                    {
+                        @Html.ActionLink("Edit", "Edit/" + item.Id + "/" + item.HotelId) <span>|</span>
+                        @Html.ActionLink("Delete", "Delete/" + item.Id + "/" + item.HotelId) <span>|</span>
+                    }
+
+                    @Html.ActionLink("Details", "Details/" + item.Id + "/" + item.HotelId)
+                </td>
+            </tr>
+        }
     </tbody>
 </table>

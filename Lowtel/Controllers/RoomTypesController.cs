@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using EF.AspNetCore.Models;
 using Lowtel.Models;
+using Microsoft.AspNetCore.Http;
 
 namespace Lowtel.Controllers
 {
@@ -55,14 +56,21 @@ namespace Lowtel.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,Name,Description,PriceForNight")] RoomType roomType)
-        {
-            if (ModelState.IsValid)
+        {            
+            if (HttpContext.Session.GetString(UsersController.SessionName) != null)
             {
-                _context.Add(roomType);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                if (ModelState.IsValid)
+                {
+                    _context.Add(roomType);
+                    await _context.SaveChangesAsync();
+                    return RedirectToAction(nameof(Index));
+                }
+                return View(roomType);
             }
-            return View(roomType);
+            else
+            {
+                return RedirectToAction("Index", "Home");
+            }
         }
 
         // GET: RoomTypes/Edit/5
@@ -87,33 +95,40 @@ namespace Lowtel.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Description,PriceForNight")] RoomType roomType)
-        {
-            if (id != roomType.Id)
+        {            
+            if (HttpContext.Session.GetString(UsersController.SessionName) != null)
             {
-                return NotFound();
-            }
+                if (id != roomType.Id)
+                {
+                    return NotFound();
+                }
 
-            if (ModelState.IsValid)
-            {
-                try
+                if (ModelState.IsValid)
                 {
-                    _context.Update(roomType);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!RoomTypeExists(roomType.Id))
+                    try
                     {
-                        return NotFound();
+                        _context.Update(roomType);
+                        await _context.SaveChangesAsync();
                     }
-                    else
+                    catch (DbUpdateConcurrencyException)
                     {
-                        throw;
+                        if (!RoomTypeExists(roomType.Id))
+                        {
+                            return NotFound();
+                        }
+                        else
+                        {
+                            throw;
+                        }
                     }
+                    return RedirectToAction(nameof(Index));
                 }
-                return RedirectToAction(nameof(Index));
+                return View(roomType);
             }
-            return View(roomType);
+            else
+            {
+                return RedirectToAction("Index", "Home");
+            }
         }
 
         // GET: RoomTypes/Delete/5
@@ -146,11 +161,18 @@ namespace Lowtel.Controllers
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
-        {
-            var roomType = await _context.RoomType.FindAsync(id);
-            _context.RoomType.Remove(roomType);
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+        {            
+            if (HttpContext.Session.GetString(UsersController.SessionName) != null)
+            {
+                var roomType = await _context.RoomType.FindAsync(id);
+                _context.RoomType.Remove(roomType);
+                await _context.SaveChangesAsync();
+                return RedirectToAction(nameof(Index));
+            }
+            else
+            {
+                return RedirectToAction("Index", "Home");
+            }
         }
 
         private bool RoomTypeExists(int id)

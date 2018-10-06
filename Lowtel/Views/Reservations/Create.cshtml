@@ -104,6 +104,8 @@
         "roomTypeId": $("#room-type").val()
     };    
 
+    GenerateFreeRoom();
+
     function GenerateFreeRoom() {
         $("#room-id").html("");
         $.ajax({
@@ -135,9 +137,7 @@
             error: function (err) {
                 console.error(err);
             }
-        });
-
-        GenerateFreeRoom();
+        });        
     }
 
     // ------------ This code is for canvas draw with mouse ------------ //

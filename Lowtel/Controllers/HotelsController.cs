@@ -54,7 +54,7 @@ namespace Lowtel.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Name,State,Address,StarsRate,Description,CordX,CordY")] Hotel hotel)
+        public async Task<IActionResult> Create([Bind("Id,Name,State,City,Address,StarsRate,Description,CordX,CordY")] Hotel hotel)
         {
             // Get hotel last seq id.
             hotel.Id = this.GetLastHotelIdSeq() + 1;
@@ -89,7 +89,7 @@ namespace Lowtel.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,State,Address,StarsRate,Description,CordX,CordY")] Hotel hotel)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,State,City,Address,StarsRate,Description,CordX,CordY")] Hotel hotel)
         {
             if (id != hotel.Id)
             {
@@ -164,14 +164,14 @@ namespace Lowtel.Controllers
             return _context.Hotel.Select(h => h.Id).Max();
         }
 
-        [HttpGet]
+        // Return hotel city by cordinates from DB.
         public string GetHotelCityNameByCords()
         {
             double x = Double.Parse(Request.Query["lat"].ToString());
             double y = Double.Parse(Request.Query["lon"].ToString());
-            string address = _context.Hotel.Select(h => new { h.Address, h.CordX, h.CordY }).ToList()
-                .Where(h => h.CordX > x - 5 && h.CordX < x + 5 && h.CordY > y - 5 && h.CordY < y + 5).FirstOrDefault().Address;
-            return address.Substring(0, address.IndexOf(','));
+
+            return _context.Hotel.Select(h => new { h.City, h.CordX, h.CordY }).ToList()
+                .Where(h => h.CordX == x && h.CordY == y).FirstOrDefault().City;
         }
     }
 }

@@ -75,11 +75,7 @@
         @if (User.Identity.IsAuthenticated)
         {
             <h3>Hello @User.Identity.Name</h3>
-        }
-        else
-        {
-            <h2>You are not logged in</h2>
-        }
+        }        
         @RenderBody()
     </div>
 	<environment include="Development">

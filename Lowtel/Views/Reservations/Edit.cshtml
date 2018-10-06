@@ -3,7 +3,6 @@
     ViewData["Title"] = "Check Out Reservation";
 }
 <h2>@ViewData["Title"]</h2>
-<hr />
 <div class="ErrMsg">
     @TempData["ErrMessageReservation"]
 </div>
@@ -17,24 +16,24 @@
             <input type="hidden" id="room-id" asp-for="RoomId" />
             <input type="hidden" id="checkin-date" asp-for="CheckInDate" />
             <h4>Reservation</h4>
-            <hr /> 
+            <hr />
             <div class="form-group">
-                <labal>Check in date: </labal>
-                       @Html.DisplayFor(model => model.CheckInDate)
+                <label>Check In date: </label> @Html.DisplayFor(model => model.CheckInDate)
             </div>
             <div class="form-group">
-                <label>Price per night: </label>
-                @ViewBag.pricePerNight $
+                <label>Check Out date: </label> @Html.DisplayFor(model => model.CheckOutDate)
+            </div>
+            <div class="form-group">
+                <label>Price per night: </label> @ViewBag.pricePerNight$
             </div>
             <div class="form-group">
                 <label>Number of nights: </label> @ViewBag.nights
             </div>
             <div class="form-group">
-                <label>Total : </label>
-                @ViewBag.price $
+                <label>Total : </label> @ViewBag.price$
             </div>
             <div class="form-group">
-                <input type="submit" value="CheckOut" class="btn btn-default" />
+                <input type="submit" value="Check Out" class="btn btn-default" />
             </div>
         </form>
     </div>

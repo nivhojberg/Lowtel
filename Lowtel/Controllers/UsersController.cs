@@ -185,7 +185,7 @@ namespace Lowtel.Controllers
             }
             if (user.UserName != null && user.Password != null)
             {
-                ViewData["ErrMessage"] = "Incorrect user name or password..";
+                ViewData["ErrMessage"] = "Incorrect user name or password";
             }
             return View("Login");
         } 

@@ -21,9 +21,25 @@ namespace Lowtel.Controllers
         }
 
         // GET: Hotels
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string searchString)
         {
-            return View(await _context.Hotel.ToListAsync());
+            var hotels = from m in _context.Hotel
+                         select m;
+
+            if (!String.IsNullOrEmpty(searchString))
+            {
+                int numberSearch;
+
+                hotels = hotels.Where(h =>
+                h.Name.Contains(searchString) ||
+                h.State.Contains(searchString) ||
+                h.City.Contains(searchString) ||
+                h.Address.Contains(searchString) ||
+                h.Description.Contains(searchString) ||
+                (Int32.TryParse(searchString, out numberSearch) && h.StarsRate == numberSearch));               
+            }
+
+            return View(await hotels.ToListAsync());            
         }
 
         // GET: Hotels/Details/5

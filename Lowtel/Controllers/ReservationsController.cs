@@ -21,12 +21,28 @@ namespace Lowtel.Controllers
         }
 
         // GET: Reservations
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string searchString)
         {
             if (HttpContext.Session.GetString(UsersController.SessionName) != null)
             {
-                var lotelContext = _context.Reservation.Include(r => r.Client).Include(r => r.Hotel).Include(r => r.Room).OrderByDescending(r => r.CheckInDate);
-                return View(await lotelContext.ToListAsync());
+                IQueryable<Reservation> reservations = _context.Set<Reservation>();
+
+                reservations = reservations.Include(r => r.Client).Include(r => r.Hotel).Include(r => r.Room);
+
+                if (!String.IsNullOrEmpty(searchString))
+                {
+                    int numberSearch;
+
+                    reservations = reservations.Where(r =>
+                    r.Hotel.Name.Contains(searchString) ||
+                    r.Hotel.State.Contains(searchString) ||
+                    r.Client.Id.Contains(searchString) ||                    
+                    (Int32.TryParse(searchString, out numberSearch) && r.RoomId == numberSearch));
+                }
+            
+                reservations = reservations.OrderByDescending(r => r.CheckInDate);
+
+                return View(await reservations.ToListAsync());               
             }
             else
             {

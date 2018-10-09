@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
@@ -28,7 +27,7 @@ namespace Lowtel.Controllers
 		public IActionResult SignIn()
 		{
 			return Challenge(new AuthenticationProperties { RedirectUri = "/" }, "Facebook");
-		}
+        }
 
 		public async Task<IActionResult> SignOut()
 		{

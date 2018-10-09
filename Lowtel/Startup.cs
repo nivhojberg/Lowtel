@@ -64,6 +64,7 @@ namespace Lowtel
                 facebookOptions.AppId = "381667942656976";
                 facebookOptions.AppSecret = "05551e8a47bf6fa9eabb1c0f6b22bd7f";
             }).AddCookie();
+         
 
             services.AddMvc();
         }

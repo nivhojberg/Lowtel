@@ -1,7 +1,8 @@
 ﻿@using Lowtel.Controllers
 @using Microsoft.AspNetCore.Http;
 @{
-    ViewData["LogMSG"] = "";
+    ViewData["LogMSG"] = "";  
+    ViewBag.profileUrl = "https://graph.facebook.com/" + User.Identities.ElementAt(0).Claims.ElementAt(0).Value + "/picture??width=100&amp;height=100";
 }
 <script src="https://ajax.aspnetcdn.com/ajax/jquery/jquery-3.3.1.min.js"
         asp-fallback-src="~/lib/jquery/dist/jquery.min.js"
@@ -16,7 +17,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Lowtel - @ViewData["Title"]</title>
     <link rel="icon" href="~/images/Logo.png">
-    <link rel="stylesheet" href="~/fonts/fonts.css">    
+    <link rel="stylesheet" href="~/fonts/fonts.css">
     <environment include="Development">
         <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.css" />
         <link rel="stylesheet" href="~/css/site.css" />
@@ -29,18 +30,18 @@
     </environment>
 </head>
 <body onload="checkSession()">
-	<nav class="navbar navbar-inverse navbar-fixed-top">
-		<div class="container">
-			<div class="navbar-header">
-				<button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-					<span class="sr-only">Toggle navigation</span>
-					<span class="icon-bar"></span>
-					<span class="icon-bar"></span>
-					<span class="icon-bar"></span>
-				</button>
-				<a asp-controller="Home" asp-action="Index" class="navbar-brand">Lowtel</a>
-			</div>
-			<div class="navbar-collapse collapse" id="nav">
+    <nav class="navbar navbar-inverse navbar-fixed-top">
+        <div class="container">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a asp-controller="Home" asp-action="Index" class="navbar-brand">Lowtel</a>
+            </div>
+            <div class="navbar-collapse collapse" id="nav">
                 <ul class="nav navbar-nav">
                     <li><a asp-controller="Hotels" asp-action="Index">Hotels</a></li>
                     <li><a asp-controller="Rooms" asp-action="Index">Rooms</a></li>
@@ -57,6 +58,8 @@
                     @if (User.Identity.IsAuthenticated)
                     {
                         <li><a asp-area="" asp-controller="Auth" asp-action="SignOut">Sign out</a></li>
+                        <li><a asp-area="" asp-controller="Auth" asp-action="Post">Post</a></li>
+                        <li><img alt="" style="position:absolute; left:365px;" class="img-circle" height="39" width="39" src="@ViewBag.profileUrl" /></li>
                     }
                     else
                     {
@@ -66,12 +69,12 @@
                         <li><a class="hide" asp-controller="Auth" asp-action="FacebookLogin" id="FacebookLogin"></a></li>
                     }
                 </ul>
-			</div>
-		</div>
-	</nav>
+            </div>
+        </div>
+    </nav>
 
-	<partial name="_CookieConsentPartial" />
-      <div class="container body-content">
+    <partial name="_CookieConsentPartial" />
+    <div class="container body-content">
         @if (User.Identity.IsAuthenticated)
         {
             <h3>Hello @User.Identity.Name</h3>
@@ -82,54 +85,54 @@
         }
         @RenderBody()
     </div>
-	<environment include="Development">
-		<script src="~/lib/jquery/dist/jquery.js"></script>
-		<script src="~/lib/bootstrap/dist/js/bootstrap.js"></script>
-		<script src="~/js/site.js" asp-append-version="true"></script>
-	</environment>
-	<environment exclude="Development">
-		<script src="https://ajax.aspnetcdn.com/ajax/bootstrap/3.3.7/bootstrap.min.js"
-				asp-fallback-src="~/lib/bootstrap/dist/js/bootstrap.min.js"
-				asp-fallback-test="window.jQuery && window.jQuery.fn && window.jQuery.fn.modal"
-				crossorigin="anonymous"
-				integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa">
-		</script>
-		<script src="~/js/site.min.js" asp-append-version="true"></script>
-	</environment>
+    <environment include="Development">
+        <script src="~/lib/jquery/dist/jquery.js"></script>
+        <script src="~/lib/bootstrap/dist/js/bootstrap.js"></script>
+        <script src="~/js/site.js" asp-append-version="true"></script>
+    </environment>
+    <environment exclude="Development">
+        <script src="https://ajax.aspnetcdn.com/ajax/bootstrap/3.3.7/bootstrap.min.js"
+                asp-fallback-src="~/lib/bootstrap/dist/js/bootstrap.min.js"
+                asp-fallback-test="window.jQuery && window.jQuery.fn && window.jQuery.fn.modal"
+                crossorigin="anonymous"
+                integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa">
+        </script>
+        <script src="~/js/site.min.js" asp-append-version="true"></script>
+    </environment>
 
-	<div class="container body-content">
-		@RenderBody()
-		<hr />
-		<footer>
-			<p>&copy; 2018 - Lowtel</p>
-		</footer>
-	</div>
+    <div class="container body-content">
+        @RenderBody()
+        <hr />
+        <footer>
+            <p>&copy; 2018 - Lowtel</p>
+        </footer>
+    </div>
 
-	@RenderSection("Scripts", required: false)
+    @RenderSection("Scripts", required: false)
 </body>
 </html>
 
 <script>
-	function checkSession() {
-		$.ajax({
-			type: 'GET',						
-			url: '/Users/checkSession',
-			success: function (data) {            
-				// Checks if there is user that already logged on
+    function checkSession() {
+        $.ajax({
+            type: 'GET',
+            url: '/Users/checkSession',
+            success: function (data) {
+                // Checks if there is user that already logged on
                 if (data.isLogin) {
                     // Inject messages in JQuery.
-                    $("#WelcomeMsg").removeClass("hide").text("Welcome " + data.userName);			
+                    $("#WelcomeMsg").removeClass("hide").text("Welcome " + data.userName);
                     $("#LogOff").removeClass("hide").text("Log Off");
-                   
-				}
-                else {                    
+
+                }
+                else {
                     $("#LogMSG").removeClass("hide").text("Manager Login");
                     $("#FacebookLogin").removeClass("hide").text("Login");
-				}
-			},
+                }
+            },
             error: function (e) {
                 console.log(e);
-			}
-		});
-	}
+            }
+        });
+    }
 </script>

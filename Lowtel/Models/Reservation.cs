@@ -16,7 +16,7 @@ namespace Lowtel.Models
         [Required]
         public int HotelId { get; set; }
 
-        [Display(Name = "Room Id")]
+        [Display(Name = "Room Number")]
         [Range(1, 999)]
         [Required]
         public int RoomId { get; set; }

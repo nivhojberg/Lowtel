@@ -49,11 +49,11 @@
                 @Html.DisplayFor(modelItem => item.Client.Id)
             </td>
             <td>
-                <a asp-controller="Reservations" asp-action="Details" asp-route-ClientId="@item.ClientId" asp-route-RoomId="@item.RoomId" asp-route-HotelId="@item.HotelId" asp-route-CheckInDate="@item.CheckInDate">Details</a> |
                 <a asp-controller="Reservations" asp-action="Delete" asp-route-ClientId="@item.ClientId" asp-route-RoomId="@item.RoomId" asp-route-HotelId="@item.HotelId" asp-route-CheckInDate="@item.CheckInDate">Delete</a> |
+                <a asp-controller="Reservations" asp-action="Details" asp-route-ClientId="@item.ClientId" asp-route-RoomId="@item.RoomId" asp-route-HotelId="@item.HotelId" asp-route-CheckInDate="@item.CheckInDate">Details</a>
                 @if (item.CheckOutDate == null)
                 {
-                    <a asp-controller="Reservations" asp-action="Edit" asp-route-ClientId="@item.ClientId" asp-route-RoomId="@item.RoomId" asp-route-HotelId="@item.HotelId" asp-route-CheckInDate="@item.CheckInDate">Check Out</a>
+                    <span>|</span> <a asp-controller="Reservations" asp-action="Edit" asp-route-ClientId="@item.ClientId" asp-route-RoomId="@item.RoomId" asp-route-HotelId="@item.HotelId" asp-route-CheckInDate="@item.CheckInDate">Check Out</a>
                 }
             </td>
         </tr>

@@ -138,3 +138,7 @@ video {
 .sign-canvas {
     border: 1px solid #787878;
 }
+
+.alert-color {
+    color: red;
+}

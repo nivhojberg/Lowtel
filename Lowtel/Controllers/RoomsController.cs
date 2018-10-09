@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using EF.AspNetCore.Models;
 using Lowtel.Models;
+using Microsoft.AspNetCore.Http;
 
 namespace Lowtel.Controllers
 {
@@ -61,15 +62,22 @@ namespace Lowtel.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,HotelId,RoomTypeId,IsFree")] Room room)
         {
-            if (ModelState.IsValid)
+            if (HttpContext.Session.GetString(UsersController.SessionName) != null)
             {
-                _context.Add(room);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                if (ModelState.IsValid)
+                {
+                    _context.Add(room);
+                    await _context.SaveChangesAsync();
+                    return RedirectToAction(nameof(Index));
+                }
+                ViewData["HotelId"] = new SelectList(_context.Hotel, "Id", "Id", room.HotelId);
+                ViewData["RoomTypeId"] = new SelectList(_context.RoomType, "Id", "Id", room.RoomTypeId);
+                return View(room);
             }
-            ViewData["HotelId"] = new SelectList(_context.Hotel, "Id", "Id", room.HotelId);
-            ViewData["RoomTypeId"] = new SelectList(_context.RoomType, "Id", "Id", room.RoomTypeId);
-            return View(room);
+            else
+            {
+                return RedirectToAction("Index", "Home");
+            }
         }
 
         // GET: Rooms/Edit/5
@@ -97,34 +105,41 @@ namespace Lowtel.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("Id,HotelId,RoomTypeId,IsFree")] Room room)
         {
-            if (id != room.Id)
+            if (HttpContext.Session.GetString(UsersController.SessionName) != null)
             {
-                return NotFound();
-            }
+                if (id != room.Id)
+                {
+                    return NotFound();
+                }
 
-            if (ModelState.IsValid)
-            {
-                try
+                if (ModelState.IsValid)
                 {
-                    _context.Update(room);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!RoomExists(room.Id, room.HotelId))
+                    try
                     {
-                        return NotFound();
+                        _context.Update(room);
+                        await _context.SaveChangesAsync();
                     }
-                    else
+                    catch (DbUpdateConcurrencyException)
                     {
-                        throw;
+                        if (!RoomExists(room.Id, room.HotelId))
+                        {
+                            return NotFound();
+                        }
+                        else
+                        {
+                            throw;
+                        }
                     }
+                    return RedirectToAction(nameof(Index));
                 }
-                return RedirectToAction(nameof(Index));
+                ViewData["HotelId"] = new SelectList(_context.Hotel, "Id", "Id", room.HotelId);
+                ViewData["RoomTypeId"] = new SelectList(_context.RoomType, "Id", "Id", room.RoomTypeId);
+                return View(room);
             }
-            ViewData["HotelId"] = new SelectList(_context.Hotel, "Id", "Id", room.HotelId);
-            ViewData["RoomTypeId"] = new SelectList(_context.RoomType, "Id", "Id", room.RoomTypeId);
-            return View(room);
+            else
+            {
+                return RedirectToAction("Index", "Home");
+            }                
         }
 
         // GET: Rooms/Delete/5
@@ -135,13 +150,21 @@ namespace Lowtel.Controllers
                 return NotFound();
             }
 
+            bool isRoomOnReservation =
+                (_context.Reservation.Where(r => r.RoomId == id && r.HotelId == hotelId).Count() > 0);
+
             var room = await _context.Room
                 .Include(r => r.Hotel)
                 .Include(r => r.RoomType)
                 .FirstOrDefaultAsync(m => (m.Id == id) && (m.HotelId == hotelId));
+
             if (room == null)
             {
                 return NotFound();
+            }
+            else if (isRoomOnReservation)
+            {
+                return BadRequest("This room is in use on reservation");
             }
 
             return View(room);
@@ -151,11 +174,18 @@ namespace Lowtel.Controllers
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id, int hotelId)
-        {
-            var room = await _context.Room.FindAsync(id, hotelId);
-            _context.Room.Remove(room);
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+        {                    
+            if (HttpContext.Session.GetString(UsersController.SessionName) != null)
+            {
+                var room = await _context.Room.FindAsync(id, hotelId);
+                _context.Room.Remove(room);
+                await _context.SaveChangesAsync();
+                return RedirectToAction(nameof(Index));
+            }
+            else
+            {
+                return RedirectToAction("Index", "Home");
+            }
         }
 
         private bool RoomExists(int id, int hotelId)

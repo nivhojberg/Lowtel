@@ -1,6 +1,7 @@
 @model IEnumerable<String>
 @{
-    ViewData["Title"] = "FacebookLogin";
+    ViewData["Title"] = "Facebook Login";
 }
 
+<h2>@ViewData["Title"]</h2>
 <a class="btn btn-primary login-button" asp-controller="Auth" asp-action="SignIn">Facebook</a>

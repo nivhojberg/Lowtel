@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using EF.AspNetCore.Models;
 using Lowtel.Models;
+using Microsoft.AspNetCore.Http;
 
 namespace Lowtel.Controllers
 {
@@ -22,22 +23,29 @@ namespace Lowtel.Controllers
         // GET: Reservations
         public async Task<IActionResult> Index()
         {
-            var lotelContext = _context.Reservation.Include(r => r.Client).Include(r => r.Hotel).Include(r => r.Room);
-            return View(await lotelContext.ToListAsync());
+            if (HttpContext.Session.GetString(UsersController.SessionName) != null)
+            {
+                var lotelContext = _context.Reservation.Include(r => r.Client).Include(r => r.Hotel).Include(r => r.Room).OrderByDescending(r => r.CheckInDate);
+                return View(await lotelContext.ToListAsync());
+            }
+            else
+            {
+                return RedirectToAction("Index", "Home");
+            }            
         }
 
         // GET: Reservations/Details/5
         public IActionResult Details(string ClientId, int HotelId, int RoomId, DateTime CheckInDate)
         {
            
-            CheckInDate = DateTime.Parse(ModelState["CheckInDate"].AttemptedValue);
+            CheckInDate = DateTime.Parse(ModelState["CheckInDate"].AttemptedValue);            
             
 
-            var reservation = _context.Reservation.Where(e => (e.CheckInDate == CheckInDate) && (e.ClientId == ClientId) && (e.HotelId == HotelId) && (e.RoomId == RoomId)).ToList();
+            var reservation = _context.Reservation.Where(e => (e.CheckInDate.Equals(CheckInDate)) && (e.ClientId == ClientId) && (e.HotelId == HotelId) && (e.RoomId == RoomId)).ToList();
 
             if (reservation.Count == 0)
             {
-                return NotFound();
+                return NotFound("Reservation was not found");
             }
 
             var hotel = _context.Hotel.Where(e => (e.Id == HotelId)).ToList() ;
@@ -62,34 +70,30 @@ namespace Lowtel.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("ClientId,HotelId,RoomId,CheckInDate,CheckOutDate")] Reservation reservation)
-        {
-            bool IsReservationExist = IsClientHasOpenReservation(reservation);
+        public async Task<IActionResult> Create([Bind("ClientId,HotelId,RoomId,CheckOutDate")] Reservation reservation)
+        {                    
+            if (HttpContext.Session.GetString(UsersController.SessionName) != null)
+            {
+                reservation.CheckInDate = DateTime.Now;
+                reservation.CheckInDate = reservation.CheckInDate.AddMilliseconds(-1 * reservation.CheckInDate.Millisecond);
 
-            if(reservation.CheckInDate < DateTime.Today)
-            {
-                TempData["ErrMessageReservation"] = "Invalid Date!";
-            }
-            else if ((ModelState.IsValid) && (!IsReservationExist))
-            {
-                RoomsController room = new RoomsController(_context);
-                _context.Add(reservation);
-                await room.EditFreeByIdAsync(reservation.RoomId, reservation.HotelId, reservation.CheckOutDate);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest("Reservation parameters are not valid");
+                }
+                else
+                {
+                    RoomsController roomsController = new RoomsController(_context);
+                    await roomsController.EditFreeByIdAsync(reservation.RoomId, reservation.HotelId, reservation.CheckOutDate);
+                    _context.Add(reservation);
+                    await _context.SaveChangesAsync();
+                    return RedirectToAction(nameof(Index));
+                }
             }
             else
             {
-                TempData["ErrMessageReservation"] = "There is an open reservation for this client on this date!";
+                return RedirectToAction("Index", "Home");
             }
-
-            ViewData["HotelId"] = new SelectList(_context.Hotel, "Id", "Name");
-            ViewData["RoomTypeId"] = new SelectList(_context.RoomType, "Id", "Name");
-            ViewData["ClientId"] = new SelectList(_context.Client, "Id", "Id");
-            ViewData["RoomId"] = new SelectList(_context.Room, "Id", "Id");
-            ViewData["CheckInDate"] = reservation.CheckInDate;
-
-            return View(reservation);
         }
 
         // GET: Reservations/Edit/5
@@ -98,19 +102,21 @@ namespace Lowtel.Controllers
             
             CheckInDate = DateTime.Parse(ModelState["CheckInDate"].AttemptedValue);
             
-            var reservation = _context.Reservation.Where(e => (e.CheckInDate == CheckInDate) && (e.ClientId == ClientId) && (e.HotelId == HotelId) && (e.RoomId == RoomId)).ToList();
+            var reservation = _context.Reservation.Where(e => (e.CheckInDate.Equals(CheckInDate)) && (e.ClientId == ClientId) && (e.HotelId == HotelId) && (e.RoomId == RoomId)).FirstOrDefault();
 
-            if (reservation.Count == 0)
+            if (reservation == null)
             {
-                return NotFound();
+                return NotFound("Reservation was not found");
             }
-            else
+            else if (!PriceCompute(reservation))
             {
-                PriceCompute(reservation[0]);
+
+                return NotFound("Error on price computation");
             }
+
             ViewData["CheckInDate"] = CheckInDate;
 
-            return View(reservation[0]);
+            return View(reservation);
         }
 
         // POST: Reservations/Edit/5
@@ -119,46 +125,48 @@ namespace Lowtel.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit([Bind("ClientId,HotelId,RoomId,CheckInDate,CheckOutDate")] Reservation reservation)
-        {
-            reservation.CheckOutDate = DateTime.Today;
-            RoomsController room = new RoomsController(_context);
-
-            if (reservation.CheckInDate > reservation.CheckOutDate)
+        {            
+            if (HttpContext.Session.GetString(UsersController.SessionName) != null)
             {
-                TempData["ErrMessageReservation"] = "Invalid dates range!";
-            }
+                reservation.CheckOutDate = DateTime.Now;
+                RoomsController room = new RoomsController(_context);
 
-            else if (ModelState.IsValid)
-            {
-                try
+                if (ModelState.IsValid)
                 {
-                    _context.Update(reservation);
-                    await room.EditFreeByIdAsync(reservation.RoomId, reservation.HotelId, null);
-                    await _context.SaveChangesAsync();
+                    try
+                    {
+                        _context.Update(reservation);
+                        await room.EditFreeByIdAsync(reservation.RoomId, reservation.HotelId, null);
+                        await _context.SaveChangesAsync();
+                    }
+                    catch (DbUpdateConcurrencyException)
+                    {
+                        if (!ReservationExists(reservation.ClientId))
+                        {
+                            return NotFound();
+                        }
+                        else
+                        {
+                            throw;
+                        }
+                    }
+                    return RedirectToAction(nameof(Index));
                 }
-                catch (DbUpdateConcurrencyException)
+                else
                 {
-                    if (!ReservationExists(reservation.ClientId))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
+                    TempData["ErrMessageReservation"] = "There is an open reservation for this client on this date!";
                 }
-                return RedirectToAction(nameof(Index));
+
+                ViewData["ClientId"] = new SelectList(_context.Client, "Id", "Id", reservation.ClientId);
+                ViewData["HotelId"] = new SelectList(_context.Hotel, "Id", "Name", reservation.HotelId);
+                ViewData["RoomId"] = new SelectList(_context.Room, "Id", "Id", reservation.RoomId);
+                ViewData["CheckInDate"] = reservation.CheckInDate;
+                return View(reservation);
             }
             else
             {
-                TempData["ErrMessageReservation"] = "There is an open reservation for this client on this date!";
+                return RedirectToAction("Index", "Home");
             }
-
-            ViewData["ClientId"] = new SelectList(_context.Client, "Id", "Id", reservation.ClientId);
-            ViewData["HotelId"] = new SelectList(_context.Hotel, "Id", "Name", reservation.HotelId);
-            ViewData["RoomId"] = new SelectList(_context.Room, "Id", "Id", reservation.RoomId);
-            ViewData["CheckInDate"] = reservation.CheckInDate;
-            return View(reservation);
         }
 
         // GET: Reservations/Delete/5
@@ -182,12 +190,20 @@ namespace Lowtel.Controllers
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed([Bind("ClientId,HotelId,RoomId,CheckInDate,CheckOutDate")] Reservation reservation)
-        {
-            _context.Reservation.Remove(reservation);
-            RoomsController room = new RoomsController(_context);
-            await room.EditFreeByIdAsync(reservation.RoomId, reservation.HotelId, reservation.CheckOutDate);
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+        {            
+        
+            if (HttpContext.Session.GetString(UsersController.SessionName) != null)
+            {
+                _context.Reservation.Remove(reservation);
+                RoomsController room = new RoomsController(_context);
+                await room.EditFreeByIdAsync(reservation.RoomId, reservation.HotelId, reservation.CheckOutDate);
+                await _context.SaveChangesAsync();
+                return RedirectToAction(nameof(Index));
+            }
+            else
+            {
+                return RedirectToAction("Index", "Home");
+            }
         }
 
         private bool ReservationExists(string id)
@@ -195,42 +211,46 @@ namespace Lowtel.Controllers
             return _context.Reservation.Any(e => e.ClientId == id);
         }
 
-        public void PriceCompute([Bind("ClientId,HotelId,RoomId,CheckInDate,CheckOutDate")] Reservation reservation)
+        private bool PriceCompute(Reservation reservation)
         {
-            reservation.CheckOutDate = DateTime.Today;
+            reservation.CheckOutDate = DateTime.Now;
+            
+            // Data initialize
             int price = 0;
             int nights = 0;
             int pricePerNight = 0;
-            if (((!reservation.CheckOutDate.ToString().Equals("01/01/0001 00:00:00")) &&
-                (!reservation.CheckInDate.ToString().Equals("01/01/0001 00:00:00"))) &&
+
+            // Check in and check out dates validations.
+            if ((reservation.CheckInDate != null) && (reservation.CheckOutDate != null) &&
+                (!reservation.CheckOutDate.ToString().Equals("01/01/0001 00:00:00")) &&
+                (!reservation.CheckInDate.ToString().Equals("01/01/0001 00:00:00")) &&
                 reservation.CheckInDate < reservation.CheckOutDate)
             {
-                if (reservation.CheckOutDate != null)
-                {
-                    TimeSpan totalDays = ((DateTime)(reservation.CheckOutDate)).Subtract(reservation.CheckInDate);
-                    nights = totalDays.Days + 1;
-                    var room = _context.Room.Where(e => (e.Id == reservation.RoomId) && (e.HotelId == reservation.HotelId)).ToList();
-                    int roomTypeId = room[0].RoomTypeId;
-                    var roomType = _context.RoomType.Where(e => (e.Id == roomTypeId)).ToList();
-                    pricePerNight = roomType[0].PriceForNight;
-                    price = pricePerNight * nights;
-                }
-            }
-            
-            ViewBag.price = price;
-            ViewBag.nights = nights;
-            ViewBag.pricePerNight = pricePerNight;
-        }
+                TimeSpan totalDays = ((DateTime)(reservation.CheckOutDate)).Subtract(reservation.CheckInDate);
+                nights = totalDays.Days + 1;
 
-        public bool IsClientHasOpenReservation(Reservation reservation)
-        {
-            var rsvList = _context.Reservation.Where(e => (e.CheckInDate == reservation.CheckInDate) && (e.ClientId == reservation.ClientId) && (e.CheckOutDate == null)).ToList();
-            if (rsvList.Count > 0)
-            {
+                // Query the reservation room object from DV.
+                Room room = _context.Room.Where(e => (e.Id == reservation.RoomId) && (e.HotelId == reservation.HotelId)).Include(r => r.RoomType).FirstOrDefault();   
+                
+                // In case the room has not found.
+                if (room == null)
+                {
+                    return false;
+                }
+
+                pricePerNight = room.RoomType.PriceForNight;
+                price = pricePerNight * nights;
+
+                ViewBag.price = price;
+                ViewBag.nights = nights;
+                ViewBag.pricePerNight = pricePerNight;
+
                 return true;
             }
-            return false;
-
+            else
+            {
+                return false;
+            }                       
         }
 
     }

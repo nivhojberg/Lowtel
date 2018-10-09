@@ -23,12 +23,14 @@ namespace Lowtel.Models
 
         [Display(Name = "Check In Date")]
         [DataType(DataType.Date)]
+        [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy - HH:mm:ss}")]
         [Required]
         public DateTime CheckInDate { get; set; }
 
         [Display(Name = "Check Out Date")]
         [DataType(DataType.Date)]
-        public Nullable<DateTime> CheckOutDate { get; set; }
+        [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy - HH:mm:ss}")]
+        public DateTime? CheckOutDate { get; set; }
 
         public Hotel Hotel { get; set; }
         public Room Room { get; set; }

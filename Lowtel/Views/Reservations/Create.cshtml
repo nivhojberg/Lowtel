@@ -20,31 +20,25 @@
             <div class="form-group">
                 <label asp-for="ClientId" class="control-label"></label>
                 <select asp-for="ClientId" id="client-id" class="form-control" asp-items="ViewBag.ClientId"></select>
+                <div id="client-id-alert" class="alert-color hide">No clients in the system</div>
             </div>
             <div class="form-group">
                 <label asp-for="Hotel" class="control-label"></label>
-                <select id="hotel-id" class="form-control" asp-for="HotelId" asp-items="ViewBag.HotelId" onchange="reservationParm.hotelId = this.value; GenerateFreeRoom()"></select>
+                <select id="hotel-id" class="form-control" asp-for="HotelId" asp-items="ViewBag.HotelId" onchange="reservationParm.hotelId=this.value; GenerateFreeRoom()"></select>
+                <div id="hotel-id-alert" class="alert-color hide">No hotels in the system</div>
             </div>
             <div class="form-group">
                 <label>Room Type: </label>
-                <select id="roomType" asp-items="ViewBag.RoomTypeId" class="form-control" onchange="reservationParm.roomTypeId = this.value; GenerateFreeRoom()"></select>
+                <select id="room-type" asp-items="ViewBag.RoomTypeId" class="form-control" onchange="reservationParm.roomTypeId=this.value; GenerateFreeRoom()"></select>
+                <div id="room-type-alert" class="alert-color hide">No room-types in the system</div>
             </div>
             <div class="form-group">
-                <label asp-for="RoomId" class="control-label"></label>
+                <label asp-for="RoomId" class="control-label"></label>                
                 <select id="room-id" asp-for="RoomId" class="form-control"></select>
+                <div style="color:red;" id="no-free-rooms" class="hide"></div>
             </div>
             <div class="form-group">
-                <label asp-for="CheckInDate" class="control-label"></label>
-                <input asp-for="CheckInDate" id="checkin-date" class="form-control" />
-                <span asp-validation-for="CheckInDate" class="text-danger"></span>
-            </div>
-            @*<div class="form-group">
-                <label asp-for="CheckOutDate" class="control-label"></label>
-                <input asp-for="CheckOutDate" id="checkout-date" class="form-control" />
-                <span asp-validation-for="CheckOutDate" class="text-danger"></span>
-            </div>*@
-            <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-default" />
+                <input id="create-btn" type="submit" value="Create" class="btn btn-default" />
             </div>
         </form>
     </div>
@@ -53,12 +47,65 @@
     <a asp-action="Index">Back to List</a>
 </div>
 <script>
-    // init
+
+    function DisableCreate() {
+        $("#create-btn")[0].disabled = true;
+    }
+
+    function EnableCreate() {
+        $("#create-btn")[0].disabled = false;
+    }
+
+    var isEmptySelectList = false;
+
+    function CheckForEmptySelectLists() {
+        // In case not clients in the DB.
+        if (GetSelectAmount("client-id") == 0) {
+            isEmptySelectList = true;
+            DisableCreate();
+            $("#client-id").addClass("hide");
+            $("#client-id-alert").removeClass("hide");
+
+        }
+
+        // In case not hotels in the DB.
+        if (GetSelectAmount("hotel-id") == 0) {
+            isEmptySelectList = true;
+            DisableCreate();
+            $("#hotel-id").addClass("hide");
+            $("#hotel-id-alert").removeClass("hide");
+        }
+
+        // In case not room-types in the DB.
+        if (GetSelectAmount("room-type") == 0) {
+            isEmptySelectList = true;
+            DisableCreate();
+            $("#room-type").addClass("hide");
+            $("#room-type").removeClass("hide");
+        }   
+    }
+    
+    CheckForEmptySelectLists();
+
+    // Return the selected value on the select html element.
+    function GetSelectedValueById(id) {
+        var selectList = document.getElementById(id);
+        return selectList.options[selectList.selectedIndex].text;
+    }
+
+    // Return options amount on select html element.
+    function GetSelectAmount(id) {
+        var selectList = document.getElementById(id);
+        return selectList.options.length;
+    }
+
     var reservationParm = {
-        "hotelId": "1",
-        "roomTypeId": "1"
-    };
+        "hotelId": $("#hotel-id").val(),
+        "roomTypeId": $("#room-type").val()
+    };    
+
     GenerateFreeRoom();
+
     function GenerateFreeRoom() {
         $("#room-id").html("");
         $.ajax({
@@ -68,15 +115,29 @@
                 hotelId: reservationParm.hotelId,
                 roomTypeId: reservationParm.roomTypeId
             },
-            success: function (res) {
-                for (var i in res) {
-                    $("#room-id").append("<option>" + res[i].id + "</option>");
+            success: function (rooms) {
+                if (rooms && rooms.length > 0) {
+                    !isEmptySelectList && EnableCreate()
+                    $("#room-id").removeClass("hide");
+                    $("#no-free-rooms").addClass("hide");
+
+                    rooms.forEach(room => {
+                        $("#room-id").append("<option>" + room.id + "</option>");
+                    });
+                }
+                else {
+                    DisableCreate();
+                    $("#no-free-rooms").html("No free <b>" + GetSelectedValueById('room-type') +
+                        "</b> rooms in hotel <b>" + GetSelectedValueById('hotel-id') + "</b>");                    
+
+                    $("#room-id").addClass("hide");
+                    $("#no-free-rooms").removeClass("hide");
                 }
             },
             error: function (err) {
                 console.error(err);
             }
-        });
+        });        
     }
 
     // ------------ This code is for canvas draw with mouse ------------ //

@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using EF.AspNetCore.Models;
 using Lowtel.Models;
+using Microsoft.AspNetCore.Http;
 
 namespace Lowtel.Controllers
 {   
@@ -56,16 +57,23 @@ namespace Lowtel.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,Name,State,City,Address,StarsRate,Description,CordX,CordY")] Hotel hotel)
         {
-            // Get hotel last seq id.
-            hotel.Id = this.GetLastHotelIdSeq() + 1;
-
-            if (ModelState.IsValid)
+            if (HttpContext.Session.GetString(UsersController.SessionName) != null)
             {
-                _context.Add(hotel);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                // Get hotel last seq id.
+                hotel.Id = this.GetLastHotelIdSeq() + 1;
+
+                if (ModelState.IsValid)
+                {
+                    _context.Add(hotel);
+                    await _context.SaveChangesAsync();
+                    return RedirectToAction(nameof(Index));
+                }
+                return View(hotel);
             }
-            return View(hotel);
+            else
+            {
+                return RedirectToAction("Index", "Home");
+            }            
         }
 
         // GET: Hotels/Edit/5
@@ -91,32 +99,39 @@ namespace Lowtel.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("Id,Name,State,City,Address,StarsRate,Description,CordX,CordY")] Hotel hotel)
         {
-            if (id != hotel.Id)
+            if (HttpContext.Session.GetString(UsersController.SessionName) != null)
             {
-                return NotFound();
-            }
+                if (id != hotel.Id)
+                {
+                    return NotFound();
+                }
 
-            if (ModelState.IsValid)
-            {
-                try
+                if (ModelState.IsValid)
                 {
-                    _context.Update(hotel);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!HotelExists(hotel.Id))
+                    try
                     {
-                        return NotFound();
+                        _context.Update(hotel);
+                        await _context.SaveChangesAsync();
                     }
-                    else
+                    catch (DbUpdateConcurrencyException)
                     {
-                        throw;
+                        if (!HotelExists(hotel.Id))
+                        {
+                            return NotFound();
+                        }
+                        else
+                        {
+                            throw;
+                        }
                     }
+                    return RedirectToAction(nameof(Index));
                 }
-                return RedirectToAction(nameof(Index));
+                return View(hotel);
             }
-            return View(hotel);
+            else
+            {
+                return RedirectToAction("Index", "Home");
+            }        
         }
 
         // GET: Hotels/Delete/5
@@ -127,14 +142,22 @@ namespace Lowtel.Controllers
                 return NotFound();
             }
 
+            bool isHotelOnReservation =
+                (_context.Reservation.Where(r => r.HotelId == id).Count() > 0);
+
             var hotel = await _context.Hotel
                 .FirstOrDefaultAsync(m => m.Id == id);
+
             if (hotel == null)
             {
                 return NotFound();
             }
+            else if (isHotelOnReservation)
+            {
+                return BadRequest("This hotel is in use on reservation");
+            }
 
-            return View(hotel);
+            return View(hotel);            
         }
 
         // POST: Hotels/Delete/5
@@ -142,10 +165,17 @@ namespace Lowtel.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var hotel = await _context.Hotel.FindAsync(id);
-            _context.Hotel.Remove(hotel);
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+            if (HttpContext.Session.GetString(UsersController.SessionName) != null)
+            {
+                var hotel = await _context.Hotel.FindAsync(id);
+                _context.Hotel.Remove(hotel);
+                await _context.SaveChangesAsync();
+                return RedirectToAction(nameof(Index));
+            }
+            else
+            {
+                return RedirectToAction("Index", "Home");
+            }            
         }
 
         private bool HotelExists(int id)

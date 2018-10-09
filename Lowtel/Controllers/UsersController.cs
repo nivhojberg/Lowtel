@@ -70,13 +70,20 @@ namespace Lowtel.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("UserName,Password")] User user)
         {
-            if (ModelState.IsValid)
+            if (checkSession().isLogin)
             {
-                _context.Add(user);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                if (ModelState.IsValid)
+                {
+                    _context.Add(user);
+                    await _context.SaveChangesAsync();
+                    return RedirectToAction(nameof(Index));
+                }
+                return View(user);
             }
-            return View(user);
+            else
+            {
+                return RedirectToAction("Index", "Home");
+            }
         }
 
         // GET: Users/Edit/5
@@ -102,32 +109,39 @@ namespace Lowtel.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(string id, [Bind("UserName,Password")] User user)
         {
-            if (id != user.UserName)
+            if (checkSession().isLogin)
             {
-                return NotFound();
-            }
+                if (id != user.UserName)
+                {
+                    return NotFound();
+                }
 
-            if (ModelState.IsValid)
-            {
-                try
+                if (ModelState.IsValid)
                 {
-                    _context.Update(user);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!UserExists(user))
+                    try
                     {
-                        return NotFound();
+                        _context.Update(user);
+                        await _context.SaveChangesAsync();
                     }
-                    else
+                    catch (DbUpdateConcurrencyException)
                     {
-                        throw;
+                        if (!UserExists(user))
+                        {
+                            return NotFound();
+                        }
+                        else
+                        {
+                            throw;
+                        }
                     }
+                    return RedirectToAction(nameof(Index));
                 }
-                return RedirectToAction(nameof(Index));
+                return View(user);
             }
-            return View(user);
+            else
+            {
+                return RedirectToAction("Index", "Home");
+            }
         }
 
         // GET: Users/Delete/5
@@ -153,10 +167,17 @@ namespace Lowtel.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(string id)
         {
-            var user = await _context.User.FindAsync(id);
-            _context.User.Remove(user);
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+            if (checkSession().isLogin)
+            {
+                var user = await _context.User.FindAsync(id);
+                _context.User.Remove(user);
+                await _context.SaveChangesAsync();
+                return RedirectToAction(nameof(Index));
+            }
+            else
+            {
+                return RedirectToAction("Index", "Home");
+            }               
         }
 
         private bool UserExists(User user)
@@ -185,7 +206,7 @@ namespace Lowtel.Controllers
             }
             if (user.UserName != null && user.Password != null)
             {
-                ViewData["ErrMessage"] = "Incorrect user name or password..";
+                ViewData["ErrMessage"] = "Incorrect user name or password";
             }
             return View("Login");
         } 

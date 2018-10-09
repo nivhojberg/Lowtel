@@ -219,5 +219,24 @@ namespace Lowtel.Controllers
             return _context.Hotel.Select(h => new { h.City, h.CordX, h.CordY }).ToList()
                 .Where(h => h.CordX == x && h.CordY == y).FirstOrDefault().City;
         }
+
+        public List<string> GetAllHotelsState()
+        {
+            return _context.Hotel.Select(h => h.State).ToList();
+        }
+       
+        public List<string> GetAllHotelsCityByState(string state)
+        {
+            return _context.Hotel.Where(h => h.State == state).Select(h => h.City).ToList();
+        }
+
+        public async Task<IActionResult> MultiSearch(string hotelState, string hotelCity, int minStarsRate)
+        {
+            var hotels = _context.Hotel.Where(h => h.State == hotelState &&
+            h.City == hotelCity &&
+            h.StarsRate >= minStarsRate);
+
+            return View("Index", await hotels.ToListAsync());
+        }
     }
 }

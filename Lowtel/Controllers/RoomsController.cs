@@ -244,6 +244,16 @@ namespace Lowtel.Controllers
                     await _context.SaveChangesAsync();
                 }
             }
+        }                
+
+        public async Task<IActionResult> MultiSearch(string hotelState, string roomTypeName, int price) {           
+            var rooms = _context.Room.Include(r => r.Hotel).Include(r => r.RoomType).
+                Where(r => r.Hotel.State.Equals(hotelState) &&
+                r.RoomType.Name.Equals(roomTypeName) &&
+                r.RoomType.PriceForNight <= price).
+                OrderBy(r => r.HotelId).ThenBy(r => r.Id);
+
+            return View("Index", await rooms.ToListAsync());
         }
     }
 }

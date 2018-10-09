@@ -203,5 +203,10 @@ namespace Lowtel.Controllers
         {
             return _context.RoomType.Select(r => r.Id).Max();
         }
+
+        public List<string> GetAllRoomTypesName()
+        {
+            return _context.RoomType.Select(r => r.Name).ToList();
+        }
     }
 }

@@ -20,9 +20,29 @@ namespace Lowtel.Controllers
         }
 
         // GET: Clients
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string searchString)
         {
-            return View(await _context.Client.ToListAsync());
+            if (HttpContext.Session.GetString(UsersController.SessionName) != null)
+            {
+                var clients = from m in _context.Client
+                             select m;
+
+                if (!String.IsNullOrEmpty(searchString))
+                {
+                    clients = clients.Where(c =>
+                    c.FirstName.Contains(searchString) ||
+                    c.LastName.Contains(searchString) ||
+                    c.Id.Contains(searchString) ||
+                    c.PhoneNumber.Contains(searchString) ||
+                    c.CreditCard.Contains(searchString));
+                }
+
+                return View(await clients.ToListAsync());
+            }
+            else
+            {
+                return RedirectToAction("Index", "Home");
+            }            
         }
 
         // GET: Clients/Details/5

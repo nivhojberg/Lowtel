@@ -20,9 +20,25 @@ namespace Lowtel.Controllers
         }
 
         // GET: Hotels
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string searchString)
         {
-            return View(await _context.Hotel.ToListAsync());
+            var hotels = from m in _context.Hotel
+                         select m;
+
+            if (!String.IsNullOrEmpty(searchString))
+            {
+                int numberSearch;
+
+                hotels = hotels.Where(h =>
+                h.Name.Contains(searchString) ||
+                h.State.Contains(searchString) ||
+                h.City.Contains(searchString) ||
+                h.Address.Contains(searchString) ||
+                h.Description.Contains(searchString) ||
+                (Int32.TryParse(searchString, out numberSearch) && h.StarsRate == numberSearch));               
+            }
+
+            return View(await hotels.ToListAsync());            
         }
 
         // GET: Hotels/Details/5
@@ -172,6 +188,25 @@ namespace Lowtel.Controllers
             string address = _context.Hotel.Select(h => new { h.Address, h.CordX, h.CordY }).ToList()
                 .Where(h => h.CordX > x - 5 && h.CordX < x + 5 && h.CordY > y - 5 && h.CordY < y + 5).FirstOrDefault().Address;
             return address.Substring(0, address.IndexOf(','));
+        }
+
+        public List<string> GetAllHotelsState()
+        {
+            return _context.Hotel.Select(h => h.State).ToList();
+        }
+       
+        public List<string> GetAllHotelsCityByState(string state)
+        {
+            return _context.Hotel.Where(h => h.State == state).Select(h => h.City).ToList();
+        }
+
+        public async Task<IActionResult> MultiSearch(string hotelState, string hotelCity, int minStarsRate)
+        {
+            var hotels = _context.Hotel.Where(h => h.State == hotelState &&
+            h.City == hotelCity &&
+            h.StarsRate >= minStarsRate);
+
+            return View("Index", await hotels.ToListAsync());
         }
     }
 }

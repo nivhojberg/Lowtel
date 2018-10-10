@@ -20,9 +20,23 @@ namespace Lowtel.Controllers
         }
 
         // GET: RoomTypes
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string searchString)
         {
-            return View(await _context.RoomType.ToListAsync());
+            var roomTypes = from m in _context.RoomType
+                         select m;
+
+            if (!String.IsNullOrEmpty(searchString))
+            {
+                int numberSearch;
+
+                roomTypes = roomTypes.Where(r =>
+                r.Name.Contains(searchString) ||
+                r.Description.Contains(searchString) ||
+                (Int32.TryParse(searchString, out numberSearch) &&
+                (r.Id == numberSearch || r.PriceForNight == numberSearch)));
+            }
+
+            return View(await roomTypes.ToListAsync());
         }
 
         // GET: RoomTypes/Details/5
@@ -158,6 +172,11 @@ namespace Lowtel.Controllers
         public dynamic GetLastTypeId()
         {
             return _context.RoomType.Select(r => r.Id).Max();
+        }
+
+        public List<string> GetAllRoomTypesName()
+        {
+            return _context.RoomType.Select(r => r.Name).ToList();
         }
     }
 }

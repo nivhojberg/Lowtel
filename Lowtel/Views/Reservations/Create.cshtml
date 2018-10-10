@@ -73,6 +73,49 @@
                 console.error(err);
             }
         });
+<<<<<<< HEAD
+=======
+    }
+
+    // ------------ This code is for canvas draw with mouse ------------ //
+
+    var mousePressed = false;
+    var lastX, lastY;
+    var ctx;
+
+    ctx = document.getElementById('signCanvas').getContext("2d");
+
+    $('#signCanvas').mousedown(function (e) {
+        mousePressed = true;
+        Draw(e.pageX - $(this).offset().left, e.pageY - $(this).offset().top, false);
+    });
+
+    $('#signCanvas').mousemove(function (e) {
+        if (mousePressed) {
+            Draw(e.pageX - $(this).offset().left, e.pageY - $(this).offset().top, true);
+        }
+    });
+
+    $('#signCanvas').mouseup(function (e) {
+        mousePressed = false;
+    });
+    $('#signCanvas').mouseleave(function (e) {
+        mousePressed = false;
+    });
+
+    function Draw(x, y, isDown) {
+        if (isDown) {
+            ctx.beginPath();
+            ctx.strokeStyle = $('#selColor').val();
+            ctx.lineWidth = $('#selWidth').val();
+            ctx.lineJoin = "round";
+            ctx.moveTo(lastX, lastY);
+            ctx.lineTo(x, y);
+            ctx.closePath();
+            ctx.stroke();
+        }
+        lastX = x; lastY = y;
+>>>>>>> Yonathan
     }
 </script>
 @section Scripts {

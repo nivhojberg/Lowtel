@@ -16,18 +16,18 @@ namespace Lowtel.Models
         [Required]
         public int HotelId { get; set; }
 
-        [Display(Name = "Room Id")]
+        [Display(Name = "Room Number")]
         [Range(1, 999)]
         [Required]
         public int RoomId { get; set; }
 
-        [Display(Name = "Check In Date")]
+        [Display(Name = "Check-In Date")]
         [DataType(DataType.Date)]
         [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy - HH:mm:ss}")]
         [Required]
         public DateTime CheckInDate { get; set; }
 
-        [Display(Name = "Check Out Date")]
+        [Display(Name = "Check-Out Date")]
         [DataType(DataType.Date)]
         [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy - HH:mm:ss}")]
         public DateTime? CheckOutDate { get; set; }

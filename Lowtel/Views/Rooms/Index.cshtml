@@ -15,6 +15,32 @@
     </p>
 }
 
+<form asp-action="Index">
+    Search: <input type="text" name="SearchString">
+    <input type="submit" value="Filter" />
+    <a asp-controller="Rooms" asp-action="Index">Clear</a>
+</form>
+
+<form class="multi-search" asp-action="MultiSearch">
+    --- Multi search ---
+    <div class="form-group">
+        <label class="control-label">Hotel State:</label>
+        <select id="hotel-states" name="hotelState" class="form-control"></select>
+    </div>
+    <div class="form-group">
+        <label class="control-label">Room Type:</label>
+        <select id="room-types" name="roomTypeName" class="form-control"></select>
+    </div>    
+    <div class="form-group">
+        <label class="control-label">Maximum Room Price:</label>
+        <input type="number" value="500" min="1" id="price" name="price">
+    </div>
+    <div class="form-group">
+        <input type="submit" value="Search" class="btn btn-default" />
+        <a asp-controller="Rooms" asp-action="Index">Clear</a>
+    </div>
+</form>
+
 <table class="table">
     <thead>
         <tr>
@@ -74,3 +100,31 @@
         }
     </tbody>
 </table>
+
+<script>
+    $.ajax({
+        type: "GET",
+        url: "/Hotels/GetAllHotelsState",
+        success: function (states) {
+            states.forEach(state => {
+                $("#hotel-states").append("<option>" + state + "</option>");
+            });
+        },
+        error: function (err) {
+            console.error(err);
+        }
+    });
+
+    $.ajax({
+        type: "GET",
+        url: "/RoomTypes/GetAllRoomTypesName",
+        success: function (names) {
+            names.forEach(name => {
+                $("#room-types").append("<option>" + name + "</option>");
+            });
+        },
+        error: function (err) {
+            console.error(err);
+        }
+    });
+</script>

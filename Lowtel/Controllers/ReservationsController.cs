@@ -21,12 +21,28 @@ namespace Lowtel.Controllers
         }
 
         // GET: Reservations
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string searchString)
         {
             if (HttpContext.Session.GetString(UsersController.SessionName) != null)
             {
-                var lotelContext = _context.Reservation.Include(r => r.Client).Include(r => r.Hotel).Include(r => r.Room).OrderByDescending(r => r.CheckInDate);
-                return View(await lotelContext.ToListAsync());
+                IQueryable<Reservation> reservations = _context.Set<Reservation>();
+
+                reservations = reservations.Include(r => r.Client).Include(r => r.Hotel).Include(r => r.Room);
+
+                if (!String.IsNullOrEmpty(searchString))
+                {
+                    int numberSearch;
+
+                    reservations = reservations.Where(r =>
+                    r.Hotel.Name.Contains(searchString) ||
+                    r.Hotel.State.Contains(searchString) ||
+                    r.Client.Id.Contains(searchString) ||                    
+                    (Int32.TryParse(searchString, out numberSearch) && r.RoomId == numberSearch));
+                }
+            
+                reservations = reservations.OrderByDescending(r => r.CheckInDate);
+
+                return View(await reservations.ToListAsync());               
             }
             else
             {
@@ -41,17 +57,21 @@ namespace Lowtel.Controllers
             CheckInDate = DateTime.Parse(ModelState["CheckInDate"].AttemptedValue);            
             
 
-            var reservation = _context.Reservation.Where(e => (e.CheckInDate.Equals(CheckInDate)) && (e.ClientId == ClientId) && (e.HotelId == HotelId) && (e.RoomId == RoomId)).ToList();
+            Reservation reservation = _context.Reservation.Include(r => r.Client).Include(r => r.Hotel).Include(r => r.Room).Where(e => (e.CheckInDate.Equals(CheckInDate)) && (e.ClientId == ClientId) && (e.HotelId == HotelId) && (e.RoomId == RoomId)).FirstOrDefault();
 
-            if (reservation.Count == 0)
+            if (reservation == null)
             {
                 return NotFound("Reservation was not found");
             }
+            else
+            {
+                reservation.Room.RoomType = _context.RoomType.Where(r => r.Id == reservation.Room.RoomTypeId).FirstOrDefault();
+            }
 
-            var hotel = _context.Hotel.Where(e => (e.Id == HotelId)).ToList() ;
+            
             ViewData["CheckInDate"] = CheckInDate;
 
-            return View(reservation[0]);
+            return View(reservation);
         }
 
         // GET: Reservations/Create
@@ -174,7 +194,7 @@ namespace Lowtel.Controllers
         {
             CheckInDate = DateTime.Parse(ModelState["CheckInDate"].AttemptedValue);
 
-            var reservation = _context.Reservation.Where(e => (e.CheckInDate == CheckInDate) && (e.ClientId == ClientId) && (e.HotelId == HotelId) && (e.RoomId == RoomId)).ToList();
+            var reservation = _context.Reservation.Where(e => (e.CheckInDate.Equals(CheckInDate)) && (e.ClientId == ClientId) && (e.HotelId == HotelId) && (e.RoomId == RoomId)).ToList();
 
             if (reservation.Count == 0)
             {

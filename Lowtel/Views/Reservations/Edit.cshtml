@@ -18,11 +18,14 @@
             <h4>Reservation</h4>
             <hr />
             <div class="form-group">
-                <label>Check In date: </label> @Html.DisplayFor(model => model.CheckInDate)
+                <label>@Html.DisplayNameFor(model => model.CheckInDate): </label> @Html.DisplayFor(model => model.CheckInDate)
             </div>
             <div class="form-group">
-                <label>Check Out date: </label> @Html.DisplayFor(model => model.CheckOutDate)
+                <label>@Html.DisplayNameFor(model => model.CheckOutDate): </label> @Html.DisplayFor(model => model.CheckOutDate)
             </div>
+            <div class="form-group">
+                <label>@Html.DisplayNameFor(model => model.Room.RoomType): </label> @Html.DisplayFor(model => model.Room.RoomType.Name)
+            </div>            
             <div class="form-group">
                 <label>Price per night: </label> @ViewBag.pricePerNight$
             </div>

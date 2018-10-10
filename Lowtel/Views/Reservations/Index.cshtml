@@ -9,6 +9,13 @@
 <p>
     <a asp-action="Create">Create New</a>
 </p>
+
+<form>
+    Search: <input type="text" name="SearchString">
+    <input type="submit" value="Filter" />
+    <a asp-controller="Reservations" asp-action="Index">Clear</a>
+</form>
+
 <table class="table">
     <thead>
         <tr>
@@ -19,13 +26,16 @@
                 @Html.DisplayNameFor(model => model.CheckOutDate)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Hotel)
+                @Html.DisplayNameFor(model => model.Hotel.Name)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Room)
+                @Html.DisplayNameFor(model => model.Hotel.State)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Client)
+                @Html.DisplayNameFor(model => model.RoomId)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ClientId)
             </th>
             <th></th>
         </tr>
@@ -41,6 +51,9 @@
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.Hotel.Name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Hotel.State)
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.Room.Id)

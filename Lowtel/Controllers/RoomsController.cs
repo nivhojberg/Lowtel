@@ -21,10 +21,29 @@ namespace Lowtel.Controllers
         }
 
         // GET: Rooms
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string searchString)
         {
-            var lotelContext = _context.Room.Include(r => r.Hotel).Include(r => r.RoomType).OrderBy(r => r.HotelId).ThenBy(r => r.Id);
-            return View(await lotelContext.ToListAsync());
+
+            IQueryable<Room> rooms = _context.Set<Room>();
+
+            rooms = rooms.Include(r => r.Hotel).Include(r => r.RoomType);
+
+            if (!String.IsNullOrEmpty(searchString))
+            {
+                int numberSearch;
+
+                rooms = rooms.Where(r =>
+                r.Hotel.Name.Contains(searchString) ||
+                r.Hotel.State.Contains(searchString) ||
+                r.RoomType.Name.Contains(searchString)||
+                (Int32.TryParse(searchString, out numberSearch) &&
+                (r.Id == numberSearch || r.RoomType.PriceForNight == numberSearch)));
+            }
+
+
+            rooms = rooms.OrderBy(r => r.HotelId).ThenBy(r => r.Id);
+
+            return View(await rooms.ToListAsync());
         }
 
         // GET: Rooms/Details/5
@@ -225,6 +244,16 @@ namespace Lowtel.Controllers
                     await _context.SaveChangesAsync();
                 }
             }
+        }                
+
+        public async Task<IActionResult> MultiSearch(string hotelState, string roomTypeName, int price) {           
+            var rooms = _context.Room.Include(r => r.Hotel).Include(r => r.RoomType).
+                Where(r => r.Hotel.State.Equals(hotelState) &&
+                r.RoomType.Name.Equals(roomTypeName) &&
+                r.RoomType.PriceForNight <= price).
+                OrderBy(r => r.HotelId).ThenBy(r => r.Id);
+
+            return View("Index", await rooms.ToListAsync());
         }
     }
 }

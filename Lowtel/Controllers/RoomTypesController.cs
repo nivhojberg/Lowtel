@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using EF.AspNetCore.Models;
 using Lowtel.Models;
+using Microsoft.AspNetCore.Http;
 
 namespace Lowtel.Controllers
 {
@@ -20,9 +21,23 @@ namespace Lowtel.Controllers
         }
 
         // GET: RoomTypes
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string searchString)
         {
-            return View(await _context.RoomType.ToListAsync());
+            var roomTypes = from m in _context.RoomType
+                         select m;
+
+            if (!String.IsNullOrEmpty(searchString))
+            {
+                int numberSearch;
+
+                roomTypes = roomTypes.Where(r =>
+                r.Name.Contains(searchString) ||
+                r.Description.Contains(searchString) ||
+                (Int32.TryParse(searchString, out numberSearch) &&
+                (r.Id == numberSearch || r.PriceForNight == numberSearch)));
+            }
+
+            return View(await roomTypes.ToListAsync());
         }
 
         // GET: RoomTypes/Details/5
@@ -55,14 +70,21 @@ namespace Lowtel.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,Name,Description,PriceForNight")] RoomType roomType)
-        {
-            if (ModelState.IsValid)
+        {            
+            if (HttpContext.Session.GetString(UsersController.SessionName) != null)
             {
-                _context.Add(roomType);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                if (ModelState.IsValid)
+                {
+                    _context.Add(roomType);
+                    await _context.SaveChangesAsync();
+                    return RedirectToAction(nameof(Index));
+                }
+                return View(roomType);
             }
-            return View(roomType);
+            else
+            {
+                return RedirectToAction("Index", "Home");
+            }
         }
 
         // GET: RoomTypes/Edit/5
@@ -87,33 +109,40 @@ namespace Lowtel.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Description,PriceForNight")] RoomType roomType)
-        {
-            if (id != roomType.Id)
+        {            
+            if (HttpContext.Session.GetString(UsersController.SessionName) != null)
             {
-                return NotFound();
-            }
+                if (id != roomType.Id)
+                {
+                    return NotFound();
+                }
 
-            if (ModelState.IsValid)
-            {
-                try
+                if (ModelState.IsValid)
                 {
-                    _context.Update(roomType);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!RoomTypeExists(roomType.Id))
+                    try
                     {
-                        return NotFound();
+                        _context.Update(roomType);
+                        await _context.SaveChangesAsync();
                     }
-                    else
+                    catch (DbUpdateConcurrencyException)
                     {
-                        throw;
+                        if (!RoomTypeExists(roomType.Id))
+                        {
+                            return NotFound();
+                        }
+                        else
+                        {
+                            throw;
+                        }
                     }
+                    return RedirectToAction(nameof(Index));
                 }
-                return RedirectToAction(nameof(Index));
+                return View(roomType);
             }
-            return View(roomType);
+            else
+            {
+                return RedirectToAction("Index", "Home");
+            }
         }
 
         // GET: RoomTypes/Delete/5
@@ -124,11 +153,19 @@ namespace Lowtel.Controllers
                 return NotFound();
             }
 
+            bool isRoomTypeOnReservation =
+                (_context.Reservation.Where(r => r.Room.RoomType.Id == id).Count() > 0);
+
             var roomType = await _context.RoomType
                 .FirstOrDefaultAsync(m => m.Id == id);
+
             if (roomType == null)
             {
                 return NotFound();
+            }
+            else if (isRoomTypeOnReservation)
+            {
+                return BadRequest("This room-type is in use on reservation");
             }
 
             return View(roomType);
@@ -138,11 +175,18 @@ namespace Lowtel.Controllers
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
-        {
-            var roomType = await _context.RoomType.FindAsync(id);
-            _context.RoomType.Remove(roomType);
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+        {            
+            if (HttpContext.Session.GetString(UsersController.SessionName) != null)
+            {
+                var roomType = await _context.RoomType.FindAsync(id);
+                _context.RoomType.Remove(roomType);
+                await _context.SaveChangesAsync();
+                return RedirectToAction(nameof(Index));
+            }
+            else
+            {
+                return RedirectToAction("Index", "Home");
+            }
         }
 
         private bool RoomTypeExists(int id)
@@ -153,6 +197,16 @@ namespace Lowtel.Controllers
         public int GetRoomTypePrice(int roomTypeId)
         {
             return _context.RoomType.Where(r => r.Id == roomTypeId).Select(r => r.PriceForNight).FirstOrDefault();
+        }
+
+        public dynamic GetLastTypeId()
+        {
+            return _context.RoomType.Select(r => r.Id).Max();
+        }
+
+        public List<string> GetAllRoomTypesName()
+        {
+            return _context.RoomType.Select(r => r.Name).ToList();
         }
     }
 }

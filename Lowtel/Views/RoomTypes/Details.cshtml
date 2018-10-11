@@ -1,4 +1,6 @@
 ﻿@model Lowtel.Models.RoomType
+@using Lowtel.Controllers
+@using Microsoft.AspNetCore.Http;
 
 @{
     ViewData["Title"] = "Room-Type Details";
@@ -31,6 +33,9 @@
     </dl>
 </div>
 <div>
-    <a asp-action="Edit" asp-route-id="@Model.Id">Edit</a> |
+    @if (Context.Session.GetString(UsersController.SessionName) != null)
+    {
+        <a asp-action="Edit" asp-route-id="@Model.Id">Edit</a> <span>|</span>
+    }
     <a asp-action="Index">Back to List</a>
 </div>

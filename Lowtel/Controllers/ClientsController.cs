@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using EF.AspNetCore.Models;
 using Lowtel.Models;
+using Microsoft.AspNetCore.Http;
 
 namespace Lowtel.Controllers
 {
@@ -20,9 +21,29 @@ namespace Lowtel.Controllers
         }
 
         // GET: Clients
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string searchString)
         {
-            return View(await _context.Client.ToListAsync());
+            if (HttpContext.Session.GetString(UsersController.SessionName) != null)
+            {
+                var clients = from m in _context.Client
+                             select m;
+
+                if (!String.IsNullOrEmpty(searchString))
+                {
+                    clients = clients.Where(c =>
+                    c.FirstName.Contains(searchString) ||
+                    c.LastName.Contains(searchString) ||
+                    c.Id.Contains(searchString) ||
+                    c.PhoneNumber.Contains(searchString) ||
+                    c.CreditCard.Contains(searchString));
+                }
+
+                return View(await clients.ToListAsync());
+            }
+            else
+            {
+                return RedirectToAction("Index", "Home");
+            }            
         }
 
         // GET: Clients/Details/5
@@ -55,14 +76,21 @@ namespace Lowtel.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,FirstName,LastName,PhoneNumber,CreditCard")] Client client)
-        {
-            if (ModelState.IsValid)
+        {            
+            if (HttpContext.Session.GetString(UsersController.SessionName) != null)
             {
-                _context.Add(client);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                if (ModelState.IsValid)
+                {
+                    _context.Add(client);
+                    await _context.SaveChangesAsync();
+                    return RedirectToAction(nameof(Index));
+                }
+                return View(client);
             }
-            return View(client);
+            else
+            {
+                return RedirectToAction("Index", "Home");
+            }
         }
 
         // GET: Clients/Edit/5
@@ -87,33 +115,40 @@ namespace Lowtel.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(string id, [Bind("Id,FirstName,LastName,PhoneNumber,CreditCard")] Client client)
-        {
-            if (id != client.Id)
+        {            
+            if (HttpContext.Session.GetString(UsersController.SessionName) != null)
             {
-                return NotFound();
-            }
+                if (id != client.Id)
+                {
+                    return NotFound();
+                }
 
-            if (ModelState.IsValid)
-            {
-                try
+                if (ModelState.IsValid)
                 {
-                    _context.Update(client);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!ClientExists(client.Id))
+                    try
                     {
-                        return NotFound();
+                        _context.Update(client);
+                        await _context.SaveChangesAsync();
                     }
-                    else
+                    catch (DbUpdateConcurrencyException)
                     {
-                        throw;
+                        if (!ClientExists(client.Id))
+                        {
+                            return NotFound();
+                        }
+                        else
+                        {
+                            throw;
+                        }
                     }
+                    return RedirectToAction(nameof(Index));
                 }
-                return RedirectToAction(nameof(Index));
+                return View(client);
             }
-            return View(client);
+            else
+            {
+                return RedirectToAction("Index", "Home");
+            }
         }
 
         // GET: Clients/Delete/5
@@ -124,11 +159,19 @@ namespace Lowtel.Controllers
                 return NotFound();
             }
 
+            bool isClientOnReservation =
+                (_context.Reservation.Where(r => r.ClientId == id).Count() > 0);
+
             var client = await _context.Client
                 .FirstOrDefaultAsync(m => m.Id == id);
+
             if (client == null)
             {
                 return NotFound();
+            }
+            else if (isClientOnReservation)
+            {
+                return BadRequest("This client is in use on reservation");
             }
 
             return View(client);
@@ -138,11 +181,18 @@ namespace Lowtel.Controllers
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(string id)
-        {
-            var client = await _context.Client.FindAsync(id);
-            _context.Client.Remove(client);
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+        {            
+            if (HttpContext.Session.GetString(UsersController.SessionName) != null)
+            {
+                var client = await _context.Client.FindAsync(id);
+                _context.Client.Remove(client);
+                await _context.SaveChangesAsync();
+                return RedirectToAction(nameof(Index));
+            }
+            else
+            {
+                return RedirectToAction("Index", "Home");
+            }
         }
 
         private bool ClientExists(string id)

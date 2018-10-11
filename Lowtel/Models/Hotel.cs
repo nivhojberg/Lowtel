@@ -18,9 +18,14 @@ namespace Lowtel.Models
         public string Name { get; set; }
 
         [Display(Name = "Hotel State")]
-        [StringLength(15)]
+        [StringLength(30)]
         [Required]
         public string State { get; set; }
+
+        [Display(Name = "Hotel City")]
+        [StringLength(30)]
+        [Required]
+        public string City { get; set; }
 
         [Display(Name = "Hotel Address")]
         [StringLength(100)]

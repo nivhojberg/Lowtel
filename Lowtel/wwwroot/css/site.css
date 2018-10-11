@@ -121,9 +121,31 @@ video {
     text-anchor: end;
 }
 
-.ErrMag {
-    font-style:oblique;
+.ErrMsg {
+    font-style:normal;
     margin: 0;
+    color:red !important;
     text-align: center;
     font-size: 15px;
+}
+
+
+.signature-sector {
+    position: absolute;
+    right: 70px;
+}
+
+.sign-canvas {
+    border: 1px solid #787878;
+}
+
+.alert-color {
+    color: red;
+}
+
+.multi-search {
+    width: 300px;
+    border: 1px solid black;
+    padding: 12px;
+    border-radius: 10px;
 }

@@ -3,6 +3,12 @@
 @{
     ViewData["LogMSG"] = "";
 }
+<script src="https://ajax.aspnetcdn.com/ajax/jquery/jquery-3.3.1.min.js"
+        asp-fallback-src="~/lib/jquery/dist/jquery.min.js"
+        asp-fallback-test="window.jQuery"
+        crossorigin="anonymous"
+        integrity="sha384-tsQFqpEReu7ZLhBV2VZlAu7zcOV+rXbYlF2cqB8txI/8aZajjp4Bqd+V6D5IgvKT">
+</script>
 <!DOCTYPE html>
 <html>
 <head>
@@ -39,15 +45,14 @@
                     <li><a asp-controller="Hotels" asp-action="Index">Hotels</a></li>
                     <li><a asp-controller="Rooms" asp-action="Index">Rooms</a></li>
                     <li><a asp-controller="RoomTypes" asp-action="Index">Room-Types</a></li>
-                    <li><a asp-controller="Clients" asp-action="Index">Clients</a></li>
-                    <li><a asp-controller="Reservations" asp-action="Index">Reservations</a></li>
-                    <li><a asp-controller="Statistics" asp-action="Index">Statistics</a></li>
-                    <li><a asp-controller="Home" asp-action="About">About</a></li>
-                    <li><a asp-controller="Home" asp-action="Contact">Contact</a></li>
                     @if (Context.Session.GetString(UsersController.SessionName) != null)
                     {
+                        <li><a asp-controller="Clients" asp-action="Index">Clients</a></li>
+                        <li><a asp-controller="Reservations" asp-action="Index">Reservations</a></li>
                         <li><a asp-controller="Statistics" asp-action="Index">Statistics</a></li>
                     }
+                    <li><a asp-controller="Home" asp-action="About">About</a></li>
+                    <li><a asp-controller="Home" asp-action="Contact">Contact</a></li>
                     @if (User.Identity.IsAuthenticated)
                     {
                         <li><a asp-area="" asp-controller="Auth" asp-action="SignOut">Sign out</a></li>
@@ -69,11 +74,7 @@
         @if (User.Identity.IsAuthenticated)
         {
             <h3>Hello @User.Identity.Name</h3>
-        }
-        else
-        {
-            <h2>You are not logged in</h2>
-        }
+        }        
         @RenderBody()
     </div>
 	<environment include="Development">
@@ -82,12 +83,6 @@
 		<script src="~/js/site.js" asp-append-version="true"></script>
 	</environment>
 	<environment exclude="Development">
-		<script src="https://ajax.aspnetcdn.com/ajax/jquery/jquery-3.3.1.min.js"
-				asp-fallback-src="~/lib/jquery/dist/jquery.min.js"
-				asp-fallback-test="window.jQuery"
-				crossorigin="anonymous"
-				integrity="sha384-tsQFqpEReu7ZLhBV2VZlAu7zcOV+rXbYlF2cqB8txI/8aZajjp4Bqd+V6D5IgvKT">
-		</script>
 		<script src="https://ajax.aspnetcdn.com/ajax/bootstrap/3.3.7/bootstrap.min.js"
 				asp-fallback-src="~/lib/bootstrap/dist/js/bootstrap.min.js"
 				asp-fallback-test="window.jQuery && window.jQuery.fn && window.jQuery.fn.modal"

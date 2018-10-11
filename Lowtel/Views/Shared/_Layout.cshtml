@@ -2,6 +2,7 @@
 @using Microsoft.AspNetCore.Http;
 @{
     ViewData["LogMSG"] = "";
+    ViewBag.profileUrl = "https://graph.facebook.com/" + User.Identities.ElementAt(0).Claims.ElementAt(0).Value + "/picture??width=100&amp;height=100";
 }
 <script src="https://ajax.aspnetcdn.com/ajax/jquery/jquery-3.3.1.min.js"
         asp-fallback-src="~/lib/jquery/dist/jquery.min.js"
@@ -56,6 +57,7 @@
                     @if (User.Identity.IsAuthenticated)
                     {
                         <li><a asp-area="" asp-controller="Auth" asp-action="SignOut">Sign out</a></li>
+                        <li><img alt="" class="facebook-profile" src="@ViewBag.profileUrl" /></li>
                     }
                     else
                     {

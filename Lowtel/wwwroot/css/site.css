@@ -149,3 +149,12 @@ video {
     padding: 12px;
     border-radius: 10px;
 }
+
+.facebook-profile {
+    position: fixed;
+    right: 15px;
+    top: 5px;
+    height: 39px;
+    width: 39px;
+    border-radius: 50%;
+}

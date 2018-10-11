@@ -38,6 +38,7 @@ namespace Lowtel.Controllers
                     c.CreditCard.Contains(searchString));
                 }
 
+                ViewData["ErrMessageClient"] = "";
                 return View(await clients.ToListAsync());
             }
             else
@@ -81,9 +82,16 @@ namespace Lowtel.Controllers
             {
                 if (ModelState.IsValid)
                 {
-                    _context.Add(client);
-                    await _context.SaveChangesAsync();
-                    return RedirectToAction(nameof(Index));
+                    if (!ClientExists(client.Id))
+                    {
+                        _context.Add(client);
+                        await _context.SaveChangesAsync();
+                        return RedirectToAction(nameof(Index));
+                    }
+                    else
+                    {
+                        ViewData["ErrClient"] = "Client with id: " + client.Id + " already exists!";
+                    }
                 }
                 return View(client);
             }

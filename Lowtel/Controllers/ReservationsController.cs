@@ -302,7 +302,7 @@ namespace Lowtel.Controllers
             return _context.Reservation.Include(r => r.Room).GroupBy(r => r.Room.RoomTypeId).ToList();            
         }
 
-
+        // Getting hotel id and calculate by ML recommendation for favorite room type.
         public IActionResult GetRecommendedRoomTypeByHotelId(int id)
         {           
             string state = _context.Hotel.Select(h => h.State).FirstOrDefault();
@@ -340,22 +340,34 @@ namespace Lowtel.Controllers
             }
         }
 
+        // Getting two features and predict favorite room type id (label).
         public int PredictRoomByReservation(float hotelId, float hotelStateId)
         {
+            // Create a pipeline and load your data.
             var pipeline = new LearningPipeline();
-           
+            
+            // Load the data from the training file by path.
             pipeline.Add(new TextLoader(this.dataPath).CreateFrom<TrainData>(separator: ','));
 
+            // Assign numeric values to text in the "Label" column, because only
+            // numbers can be processed during model training
             pipeline.Add(new Dictionarizer("Label"));
 
+            // Puts all features into a vector
             pipeline.Add(new ColumnConcatenator("Features", "HotelId", "HotelStateId"));
 
+            // Add learner
+            // Add a learning algorithm to the pipeline. 
+            // This is a classification scenario.
             pipeline.Add(new StochasticDualCoordinateAscentClassifier());
 
+            // Convert the Label back into original text (after converting to number).
             pipeline.Add(new PredictedLabelColumnOriginalValueConverter() { PredictedLabelColumn = "PredictedLabel" });
 
+            // Train our model based on the data set.
             var model = pipeline.Train<TrainData, Prediction>();
 
+            // Use our model to make a prediction.
             return model.Predict(new TrainData()
             {
                 HotelId = hotelId,
@@ -364,6 +376,7 @@ namespace Lowtel.Controllers
 
         }
 
+        // This function prepare file with training data.
         public void TrainReservationsData()
         {
             var reservations = _context.Reservation.Include(r => r.Hotel).Include(r => r.Room).
@@ -383,6 +396,7 @@ namespace Lowtel.Controllers
 
     }
 
+    // This class is the train data vector structure.
     public class TrainData
     {
         [Column("0")]
@@ -398,6 +412,7 @@ namespace Lowtel.Controllers
         public int RoomTypeId;
     }
 
+    // This clss is the prediction object.
     public class Prediction
     {
         [ColumnName("PredictedLabel")]

@@ -158,3 +158,17 @@ video {
     width: 39px;
     border-radius: 50%;
 }
+.ml-suggest {
+    margin-left: 20px;
+    font-weight: bold;
+    color: #337ab7;
+    border: 0.5px solid #979797;
+    padding: 2px 6px 2px 6px;
+    border-radius: 5px;
+    margin-bottom: 14px;
+}
+
+.prediction-sector {
+    display: flex;
+    align-items: center;
+}

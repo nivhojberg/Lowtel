@@ -8,16 +8,29 @@ using Microsoft.EntityFrameworkCore;
 using EF.AspNetCore.Models;
 using Lowtel.Models;
 using Microsoft.AspNetCore.Http;
+using Microsoft.ML.Legacy;
+using Microsoft.ML;
+using Microsoft.ML.Data;
+using Microsoft.ML.Runtime.Api;
+using Microsoft.ML.Trainers;
+using Microsoft.ML.Transforms;
+using Microsoft.ML.Legacy.Data;
+using Microsoft.ML.Legacy.Transforms;
+using Microsoft.ML.Legacy.Trainers;
+using System.IO;
 
 namespace Lowtel.Controllers
-{
+{    
     public class ReservationsController : Controller
-    {
+    {        
         private readonly LotelContext _context;
+        public string dataPath = "ML/train.txt";
 
         public ReservationsController(LotelContext context)
         {
             _context = context;
+            //TrainReservationsData();
+            //int x = LearnRoomByReservation(1, 1);
         }
 
         // GET: Reservations
@@ -36,26 +49,26 @@ namespace Lowtel.Controllers
                     reservations = reservations.Where(r =>
                     r.Hotel.Name.Contains(searchString) ||
                     r.Hotel.State.Contains(searchString) ||
-                    r.Client.Id.Contains(searchString) ||                    
+                    r.Client.Id.Contains(searchString) ||
                     (Int32.TryParse(searchString, out numberSearch) && r.RoomId == numberSearch));
                 }
-            
+
                 reservations = reservations.OrderByDescending(r => r.CheckInDate);
 
-                return View(await reservations.ToListAsync());               
+                return View(await reservations.ToListAsync());
             }
             else
             {
                 return RedirectToAction("Index", "Home");
-            }            
+            }
         }
 
         // GET: Reservations/Details/5
         public IActionResult Details(string ClientId, int HotelId, int RoomId, DateTime CheckInDate)
         {
-           
-            CheckInDate = DateTime.Parse(ModelState["CheckInDate"].AttemptedValue);            
-            
+
+            CheckInDate = DateTime.Parse(ModelState["CheckInDate"].AttemptedValue);
+
 
             Reservation reservation = _context.Reservation.Include(r => r.Client).Include(r => r.Hotel).Include(r => r.Room).Where(e => (e.CheckInDate.Equals(CheckInDate)) && (e.ClientId == ClientId) && (e.HotelId == HotelId) && (e.RoomId == RoomId)).FirstOrDefault();
 
@@ -68,7 +81,7 @@ namespace Lowtel.Controllers
                 reservation.Room.RoomType = _context.RoomType.Where(r => r.Id == reservation.Room.RoomTypeId).FirstOrDefault();
             }
 
-            
+
             ViewData["CheckInDate"] = CheckInDate;
 
             return View(reservation);
@@ -82,6 +95,12 @@ namespace Lowtel.Controllers
             ViewData["RoomTypeId"] = new SelectList(_context.RoomType, "Id", "Name");
             ViewData["ClientId"] = new SelectList(_context.Client, "Id", "Id");
             ViewData["RoomId"] = new SelectList(_context.Room, "Id", "Id");
+
+            if(CountOfRoomTypeOnReservations() > 1)
+            {
+                TrainReservationsData();
+            }
+
             return View();
         }
 
@@ -91,7 +110,7 @@ namespace Lowtel.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("ClientId,HotelId,RoomId,CheckOutDate")] Reservation reservation)
-        {                    
+        {
             if (HttpContext.Session.GetString(UsersController.SessionName) != null)
             {
                 reservation.CheckInDate = DateTime.Now;
@@ -119,9 +138,9 @@ namespace Lowtel.Controllers
         // GET: Reservations/Edit/5
         public IActionResult Edit(string ClientId, int HotelId, int RoomId, DateTime CheckInDate)
         {
-            
+
             CheckInDate = DateTime.Parse(ModelState["CheckInDate"].AttemptedValue);
-            
+
             var reservation = _context.Reservation.Where(e => (e.CheckInDate.Equals(CheckInDate)) && (e.ClientId == ClientId) && (e.HotelId == HotelId) && (e.RoomId == RoomId)).FirstOrDefault();
 
             if (reservation == null)
@@ -145,7 +164,7 @@ namespace Lowtel.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit([Bind("ClientId,HotelId,RoomId,CheckInDate,CheckOutDate")] Reservation reservation)
-        {            
+        {
             if (HttpContext.Session.GetString(UsersController.SessionName) != null)
             {
                 reservation.CheckOutDate = DateTime.Now;
@@ -210,8 +229,8 @@ namespace Lowtel.Controllers
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed([Bind("ClientId,HotelId,RoomId,CheckInDate,CheckOutDate")] Reservation reservation)
-        {            
-        
+        {
+
             if (HttpContext.Session.GetString(UsersController.SessionName) != null)
             {
                 _context.Reservation.Remove(reservation);
@@ -234,7 +253,7 @@ namespace Lowtel.Controllers
         private bool PriceCompute(Reservation reservation)
         {
             reservation.CheckOutDate = DateTime.Now;
-            
+
             // Data initialize
             int price = 0;
             int nights = 0;
@@ -250,9 +269,9 @@ namespace Lowtel.Controllers
                 nights = totalDays.Days + 1;
 
                 // Query the reservation room object from DV.
-                Room room = _context.Room.Where(e => (e.Id == reservation.RoomId) && (e.HotelId == reservation.HotelId)).Include(r => r.RoomType).FirstOrDefault();   
-                
-                // In case the room has not found.
+                Room room = _context.Room.Where(e => (e.Id == reservation.RoomId) && (e.HotelId == reservation.HotelId)).Include(r => r.RoomType).FirstOrDefault();
+
+                // In case the room has not found
                 if (room == null)
                 {
                     return false;
@@ -270,8 +289,134 @@ namespace Lowtel.Controllers
             else
             {
                 return false;
-            }                       
+            }
+        }
+
+        public int CountOfRoomTypeOnReservations()
+        {
+            return _context.Reservation.Include(r => r.Room).GroupBy(r => r.Room.RoomTypeId).Count();
+        }
+
+        public List<IGrouping<int, Reservation>> GetRoomTypeOnReservations()
+        {
+            return _context.Reservation.Include(r => r.Room).GroupBy(r => r.Room.RoomTypeId).ToList();            
+        }
+
+        // Getting hotel id and calculate by ML recommendation for favorite room type.
+        public IActionResult GetRecommendedRoomTypeByHotelId(int id)
+        {           
+            string state = _context.Hotel.Select(h => h.State).FirstOrDefault();
+
+            if (state == null)
+            {
+                return NotFound("Hotel state not found for hotel with id: " + id);
+            }
+            else
+            {
+                int roomTypeId;
+                var RoomTypeList = GetRoomTypeOnReservations();
+
+                if (RoomTypeList.Count == 1)
+                {
+                    roomTypeId = RoomTypeList[0].Key;
+                }
+                else if (RoomTypeList.Count > 1)
+                {
+                    roomTypeId = PredictRoomByReservation(id, state.GetHashCode());
+                }
+                else
+                {
+                    return BadRequest();
+                }
+                    
+                string predictedRoomType = _context.RoomType.Where(r => r.Id == id).Select(r => r.Name).FirstOrDefault();
+
+                if (predictedRoomType == null)
+                {
+                    return NotFound("There is no room type id " + roomTypeId);
+                }
+
+                return Ok(predictedRoomType);
+            }
+        }
+
+        // Getting two features and predict favorite room type id (label).
+        public int PredictRoomByReservation(float hotelId, float hotelStateId)
+        {
+            // Create a pipeline and load your data.
+            var pipeline = new LearningPipeline();
+            
+            // Load the data from the training file by path.
+            pipeline.Add(new TextLoader(this.dataPath).CreateFrom<TrainData>(separator: ','));
+
+            // Assign numeric values to text in the "Label" column, because only
+            // numbers can be processed during model training
+            pipeline.Add(new Dictionarizer("Label"));
+
+            // Puts all features into a vector
+            pipeline.Add(new ColumnConcatenator("Features", "HotelId", "HotelStateId"));
+
+            // Add learner
+            // Add a learning algorithm to the pipeline. 
+            // This is a classification scenario.
+            pipeline.Add(new StochasticDualCoordinateAscentClassifier());
+
+            // Convert the Label back into original text (after converting to number).
+            pipeline.Add(new PredictedLabelColumnOriginalValueConverter() { PredictedLabelColumn = "PredictedLabel" });
+
+            // Train our model based on the data set.
+            var model = pipeline.Train<TrainData, Prediction>();
+
+            // Use our model to make a prediction.
+            return model.Predict(new TrainData()
+            {
+                HotelId = hotelId,
+                HotelStateId = hotelStateId
+            }).RoomTypeId;
+
+        }
+
+        // This function prepare file with training data.
+        public void TrainReservationsData()
+        {
+            var reservations = _context.Reservation.Include(r => r.Hotel).Include(r => r.Room).
+                Select(r => new { r.HotelId, r.Hotel.State, r.Room.RoomTypeId }).ToList();
+            using (StreamWriter outputFile = new StreamWriter(this.dataPath))
+            {
+                foreach (var reservation in reservations)
+                {
+                    int hotelId = reservation.HotelId;
+                    int stateId = reservation.State.GetHashCode();
+                    outputFile.WriteLine(hotelId + "," + stateId + "," + reservation.RoomTypeId);
+                }
+
+                outputFile.Close();
+            } 
         }
 
     }
+
+    // This class is the train data vector structure.
+    public class TrainData
+    {
+        [Column("0")]
+        [ColumnName("HotelId")]
+        public float HotelId;
+
+        [Column("1")]
+        [ColumnName("HotelStateId")]
+        public float HotelStateId;
+
+        [Column("2")]
+        [ColumnName("Label")]
+        public int RoomTypeId;
+    }
+
+    // This clss is the prediction object.
+    public class Prediction
+    {
+        [ColumnName("PredictedLabel")]
+        public int RoomTypeId; 
+    }
+
 }

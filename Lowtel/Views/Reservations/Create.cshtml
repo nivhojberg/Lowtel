@@ -24,13 +24,16 @@
             </div>
             <div class="form-group">
                 <label asp-for="Hotel" class="control-label"></label>
-                <select id="hotel-id" class="form-control" asp-for="HotelId" asp-items="ViewBag.HotelId" onchange="reservationParm.hotelId=this.value; GenerateFreeRoom()"></select>
+                <select id="hotel-id" class="form-control" asp-for="HotelId" asp-items="ViewBag.HotelId" onchange="reservationParm.hotelId=this.value;GenerateFreeRoom();GetRecommendedRoomTypeByHotelId()"></select>
                 <div id="hotel-id-alert" class="alert-color hide">No hotels in the system</div>
             </div>
-            <div class="form-group">
-                <label>Room Type: </label>
-                <select id="room-type" asp-items="ViewBag.RoomTypeId" class="form-control" onchange="reservationParm.roomTypeId=this.value; GenerateFreeRoom()"></select>
-                <div id="room-type-alert" class="alert-color hide">No room-types in the system</div>
+            <div class="prediction-sector">
+                <div class="form-group" style="width:100%;">
+                    <label>Room Type: </label>
+                    <select id="room-type" asp-items="ViewBag.RoomTypeId" class="form-control" onchange="reservationParm.roomTypeId=this.value; GenerateFreeRoom()"></select>
+                    <div id="room-type-alert" class="alert-color hide">No room-types in the system</div>
+                </div>
+                <span id="ml-suggest" class="ml-suggest hide"></span>
             </div>
             <div class="form-group">
                 <label asp-for="RoomId" class="control-label"></label>                
@@ -85,7 +88,7 @@
         }   
     }
     
-    CheckForEmptySelectLists();
+    CheckForEmptySelectLists();    
 
     // Return the selected value on the select html element.
     function GetSelectedValueById(id) {
@@ -181,6 +184,35 @@
     }
 
     // ------------ This code is for canvas draw with mouse ------------ //
+
+    // ------------- ML CODE -------------
+
+    // Recommend room type for any hotel id that selected.
+    function GetRecommendedRoomTypeByHotelId() {
+        var hotelId = reservationParm.hotelId;
+
+        $.ajax({
+            type: "GET",
+            url: "/Reservations/GetRecommendedRoomTypeByHotelId?id=" + hotelId,
+            success: function (roomTypeName) {
+                if (roomTypeName) {
+                    $("#ml-suggest").removeClass("hide");
+                    $("#ml-suggest").html("<label style='color:black;'>Recomended: </label>" + roomTypeName);
+                }
+            },
+            error: function (err) {
+                console.error(err);
+            }
+        });
+
+    }
+
+    GetRecommendedRoomTypeByHotelId();
+
+
+    // ------------- ML CODE -------------
+
+
 </script>
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}

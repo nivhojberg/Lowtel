@@ -125,7 +125,6 @@ video {
     font-style:normal;
     margin: 0;
     color:red !important;
-    text-align: center;
     font-size: 15px;
 }
 
@@ -148,4 +147,27 @@ video {
     border: 1px solid black;
     padding: 12px;
     border-radius: 10px;
+}
+
+.facebook-profile {
+    position: fixed;
+    right: 15px;
+    top: 5px;
+    height: 39px;
+    width: 39px;
+    border-radius: 50%;
+}
+.ml-suggest {
+    margin-left: 20px;
+    font-weight: bold;
+    color: #337ab7;
+    border: 0.5px solid #979797;
+    padding: 2px 6px 2px 6px;
+    border-radius: 5px;
+    margin-bottom: 14px;
+}
+
+.prediction-sector {
+    display: flex;
+    align-items: center;
 }

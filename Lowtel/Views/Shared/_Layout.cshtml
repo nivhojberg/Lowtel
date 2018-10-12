@@ -55,7 +55,9 @@
                     <li><a asp-controller="Home" asp-action="Contact">Contact</a></li>
                     @if (User.Identity.IsAuthenticated)
                     {
+                        ViewBag.profileUrl = "https://graph.facebook.com/" + User.Identities.ElementAt(0).Claims.ElementAt(0).Value + "/picture??width=100&amp;height=100";
                         <li><a asp-area="" asp-controller="Auth" asp-action="SignOut">Sign out</a></li>
+                        <li><img alt="" class="facebook-profile" src="@ViewBag.profileUrl" /></li>
                     }
                     else
                     {

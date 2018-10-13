@@ -306,7 +306,7 @@ namespace Lowtel.Controllers
         // Getting hotel id and calculate by ML recommendation for favorite room type.
         public IActionResult GetRecommendedRoomTypeByHotelId(int id)
         {           
-            string state = _context.Hotel.Select(h => h.State).FirstOrDefault();
+            string state = _context.Hotel.Where(h => h.Id == id).Select(h => h.State).FirstOrDefault();
 
             if (state == null)
             {
@@ -323,7 +323,7 @@ namespace Lowtel.Controllers
                 }
                 else if (RoomTypeList.Count > 1)
                 {
-                    roomTypeId = PredictRoomByReservation(id, state.GetHashCode());
+                    roomTypeId = PredictRoomByReservation(id, state);
                 }
                 else
                 {
@@ -342,7 +342,7 @@ namespace Lowtel.Controllers
         }
 
         // Getting two features and predict favorite room type id (label).
-        public int PredictRoomByReservation(float hotelId, float hotelStateId)
+        public int PredictRoomByReservation(float hotelId, string hotelState)
         {
             // Create a pipeline and load your data.
             var pipeline = new LearningPipeline();
@@ -353,9 +353,10 @@ namespace Lowtel.Controllers
             // Assign numeric values to text in the "Label" column, because only
             // numbers can be processed during model training
             pipeline.Add(new Dictionarizer("Label"));
+            pipeline.Add(new CategoricalOneHotVectorizer("HotelState"));
 
             // Puts all features into a vector
-            pipeline.Add(new ColumnConcatenator("Features", "HotelId", "HotelStateId"));
+            pipeline.Add(new ColumnConcatenator("Features", "HotelId", "HotelState"));
 
             // Add learner
             // Add a learning algorithm to the pipeline. 
@@ -372,7 +373,7 @@ namespace Lowtel.Controllers
             return model.Predict(new TrainData()
             {
                 HotelId = hotelId,
-                HotelStateId = hotelStateId
+                HotelState = hotelState
             }).RoomTypeId;
 
         }
@@ -387,8 +388,8 @@ namespace Lowtel.Controllers
                 foreach (var reservation in reservations)
                 {
                     int hotelId = reservation.HotelId;
-                    int stateId = reservation.State.GetHashCode();
-                    outputFile.WriteLine(hotelId + "," + stateId + "," + reservation.RoomTypeId);
+                    string hotelState = reservation.State;
+                    outputFile.WriteLine(hotelId + "," + hotelState + "," + reservation.RoomTypeId);
                 }
 
                 outputFile.Close();
@@ -405,8 +406,8 @@ namespace Lowtel.Controllers
         public float HotelId;
 
         [Column("1")]
-        [ColumnName("HotelStateId")]
-        public float HotelStateId;
+        [ColumnName("HotelState")]
+        public string HotelState;
 
         [Column("2")]
         [ColumnName("Label")]

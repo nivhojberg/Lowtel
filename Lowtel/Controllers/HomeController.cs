@@ -13,7 +13,6 @@ namespace Lowtel.Controllers
     {
         public IActionResult Index()
         {
-            //HttpContext.Session.SetString(UsersController.SessionName, "admin");
             return View();
         }
 

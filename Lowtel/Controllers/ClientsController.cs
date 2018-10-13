@@ -38,7 +38,8 @@ namespace Lowtel.Controllers
                     c.CreditCard.Contains(searchString));
                 }
 
-                ViewData["ErrMessageClient"] = "";
+                clients = clients.OrderBy(c => c.FirstName).ThenBy(c => c.LastName);
+                                
                 return View(await clients.ToListAsync());
             }
             else
@@ -68,6 +69,7 @@ namespace Lowtel.Controllers
         // GET: Clients/Create
         public IActionResult Create()
         {
+            ViewData["ErrClient"] = "";
             return View();
         }
 
@@ -162,13 +164,12 @@ namespace Lowtel.Controllers
         // GET: Clients/Delete/5
         public async Task<IActionResult> Delete(string id)
         {
+            ViewData["ErrDeleteClient"] = "";
+
             if (id == null)
             {
                 return NotFound();
-            }
-
-            bool isClientOnReservation =
-                (_context.Reservation.Where(r => r.ClientId == id).Count() > 0);
+            }            
 
             var client = await _context.Client
                 .FirstOrDefaultAsync(m => m.Id == id);
@@ -176,11 +177,7 @@ namespace Lowtel.Controllers
             if (client == null)
             {
                 return NotFound();
-            }
-            else if (isClientOnReservation)
-            {
-                return BadRequest("This client is in use on reservation");
-            }
+            }            
 
             return View(client);
         }
@@ -192,10 +189,21 @@ namespace Lowtel.Controllers
         {            
             if (HttpContext.Session.GetString(UsersController.SessionName) != null)
             {
-                var client = await _context.Client.FindAsync(id);
-                _context.Client.Remove(client);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                bool isClientOnReservation =
+                (_context.Reservation.Where(r => r.ClientId == id).Count() > 0);
+
+                if (isClientOnReservation)
+                {
+                    ViewData["ErrDeleteClient"] = "This client is in use on reservation";
+                    return View();
+                }
+                else
+                {
+                    var client = await _context.Client.FindAsync(id);
+                    _context.Client.Remove(client);
+                    await _context.SaveChangesAsync();
+                    return RedirectToAction(nameof(Index));
+                }                
             }
             else
             {

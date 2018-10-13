@@ -33,7 +33,7 @@
                     <select id="room-type" asp-items="ViewBag.RoomTypeId" class="form-control" onchange="reservationParm.roomTypeId=this.value; GenerateFreeRoom()"></select>
                     <div id="room-type-alert" class="alert-color hide">No room-types in the system</div>
                 </div>
-                <span id="ml-suggest" class="ml-suggest hide"></span>
+                <span id="ml-suggest" class="ml-suggest"></span>
             </div>
             <div class="form-group">
                 <label asp-for="RoomId" class="control-label"></label>                
@@ -190,14 +190,14 @@
     // Recommend room type for any hotel id that selected.
     function GetRecommendedRoomTypeByHotelId() {
         var hotelId = reservationParm.hotelId;
+        $("#ml-suggest").html("<label>...</label>");
 
         $.ajax({
             type: "GET",
             url: "/Reservations/GetRecommendedRoomTypeByHotelId?id=" + hotelId,
             success: function (roomTypeName) {
-                if (roomTypeName) {
-                    $("#ml-suggest").removeClass("hide");
-                    $("#ml-suggest").html("<label style='color:black;'>Recomended: </label>" + roomTypeName);
+                if (roomTypeName) {                    
+                    $("#ml-suggest").html("<label style='color:black;text-align:left;'>Recomended:</label>" + roomTypeName);
                 }
             },
             error: function (err) {

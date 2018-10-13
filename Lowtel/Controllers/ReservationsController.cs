@@ -29,8 +29,6 @@ namespace Lowtel.Controllers
         public ReservationsController(LotelContext context)
         {
             _context = context;
-            //TrainReservationsData();
-            //int x = LearnRoomByReservation(1, 1);
         }
 
         // GET: Reservations
@@ -38,9 +36,17 @@ namespace Lowtel.Controllers
         {
             if (HttpContext.Session.GetString(UsersController.SessionName) != null)
             {
+                if (CountOfRoomTypeOnReservations() > 1)
+                {
+                    TrainReservationsData();
+                }
+
                 IQueryable<Reservation> reservations = _context.Set<Reservation>();
 
-                reservations = reservations.Include(r => r.Client).Include(r => r.Hotel).Include(r => r.Room);
+                reservations = reservations.Include(r => r.Client).
+                    Include(r => r.Hotel).
+                    Include(r => r.Room).
+                    Include(r => r.Room.RoomType);
 
                 if (!String.IsNullOrEmpty(searchString))
                 {
@@ -53,7 +59,7 @@ namespace Lowtel.Controllers
                     (Int32.TryParse(searchString, out numberSearch) && r.RoomId == numberSearch));
                 }
 
-                reservations = reservations.OrderByDescending(r => r.CheckInDate);
+                reservations = reservations.OrderByDescending(r => r.CheckInDate);                
 
                 return View(await reservations.ToListAsync());
             }
@@ -94,12 +100,7 @@ namespace Lowtel.Controllers
             ViewData["HotelId"] = new SelectList(_context.Hotel, "Id", "Name");
             ViewData["RoomTypeId"] = new SelectList(_context.RoomType, "Id", "Name");
             ViewData["ClientId"] = new SelectList(_context.Client, "Id", "Id");
-            ViewData["RoomId"] = new SelectList(_context.Room, "Id", "Id");
-
-            if(CountOfRoomTypeOnReservations() > 1)
-            {
-                TrainReservationsData();
-            }
+            ViewData["RoomId"] = new SelectList(_context.Room, "Id", "Id");            
 
             return View();
         }
@@ -329,7 +330,7 @@ namespace Lowtel.Controllers
                     return BadRequest();
                 }
                     
-                string predictedRoomType = _context.RoomType.Where(r => r.Id == id).Select(r => r.Name).FirstOrDefault();
+                string predictedRoomType = _context.RoomType.Where(r => r.Id == roomTypeId).Select(r => r.Name).FirstOrDefault();
 
                 if (predictedRoomType == null)
                 {

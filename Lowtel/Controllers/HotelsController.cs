@@ -226,8 +226,8 @@ namespace Lowtel.Controllers
         }
        
         public List<string> GetAllHotelsCityByState(string state)
-        {
-            return _context.Hotel.Where(h => h.State == state).Select(h => h.City).ToList();
+        {            
+            return _context.Hotel.Where(h => h.State == state).GroupBy(h => h.City).Select(h => h.Key).ToList();
         }
 
         public async Task<IActionResult> MultiSearch(string hotelState, string hotelCity, int minStarsRate)

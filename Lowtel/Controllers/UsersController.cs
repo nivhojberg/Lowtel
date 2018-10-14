@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
@@ -71,13 +70,20 @@ namespace Lowtel.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("UserName,Password")] User user)
         {
-            if (ModelState.IsValid)
+            if (checkSession().isLogin)
             {
-                _context.Add(user);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                if (ModelState.IsValid)
+                {
+                    _context.Add(user);
+                    await _context.SaveChangesAsync();
+                    return RedirectToAction(nameof(Index));
+                }
+                return View(user);
             }
-            return View(user);
+            else
+            {
+                return RedirectToAction("Index", "Home");
+            }
         }
 
         // GET: Users/Edit/5
@@ -103,32 +109,39 @@ namespace Lowtel.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(string id, [Bind("UserName,Password")] User user)
         {
-            if (id != user.UserName)
+            if (checkSession().isLogin)
             {
-                return NotFound();
-            }
+                if (id != user.UserName)
+                {
+                    return NotFound();
+                }
 
-            if (ModelState.IsValid)
-            {
-                try
+                if (ModelState.IsValid)
                 {
-                    _context.Update(user);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!UserExists(user))
+                    try
                     {
-                        return NotFound();
+                        _context.Update(user);
+                        await _context.SaveChangesAsync();
                     }
-                    else
+                    catch (DbUpdateConcurrencyException)
                     {
-                        throw;
+                        if (!UserExists(user))
+                        {
+                            return NotFound();
+                        }
+                        else
+                        {
+                            throw;
+                        }
                     }
+                    return RedirectToAction(nameof(Index));
                 }
-                return RedirectToAction(nameof(Index));
+                return View(user);
             }
-            return View(user);
+            else
+            {
+                return RedirectToAction("Index", "Home");
+            }
         }
 
         // GET: Users/Delete/5
@@ -154,10 +167,17 @@ namespace Lowtel.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(string id)
         {
-            var user = await _context.User.FindAsync(id);
-            _context.User.Remove(user);
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+            if (checkSession().isLogin)
+            {
+                var user = await _context.User.FindAsync(id);
+                _context.User.Remove(user);
+                await _context.SaveChangesAsync();
+                return RedirectToAction(nameof(Index));
+            }
+            else
+            {
+                return RedirectToAction("Index", "Home");
+            }               
         }
 
         private bool UserExists(User user)
@@ -165,35 +185,31 @@ namespace Lowtel.Controllers
             return _context.User.Any(u => (u.UserName == user.UserName) && (u.Password == user.Password));
         }
 
-        // This function return the view of login page
-        public IActionResult Login()
-        {
-            if (!checkSession().isLogin)
-            {
-                return View();
-            }
-            else
-            {
-                return RedirectToAction("Index", "Home");
-            }
-        }
-
         // This function signing in the user by checking if the user exist
         // parm: User obj
         // return: redirection to homePage if the user success to login, error if not
-        public IActionResult CheckAuthenticate([Bind("UserName,Password")] User user)
+        public IActionResult Login([Bind("UserName,Password")] User user)
         {
-            if (ModelState.IsValid)
+            ViewData["ErrMessage"] = "";
+            if (checkSession().isLogin)
+            {
+                return RedirectToAction("Index", "Home");
+
+            }
+            else if (ModelState.IsValid)
             {
                 if (UserExists(user))
                 {
-                    HttpContext.Session.SetString(SessionName, user.UserName);                    
+                    HttpContext.Session.SetString(SessionName, user.UserName);
                     return RedirectToAction("Index", "Home");
                 }
             }
-            
-            return NotFound();
-        }
+            if (user.UserName != null && user.Password != null)
+            {
+                ViewData["ErrMessage"] = "Incorrect user name or password";
+            }
+            return View("Login");
+        } 
 
         // This function loging off a user
         // return: redirection to homePage

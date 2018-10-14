@@ -2,11 +2,13 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp2.1</TargetFramework>
+    <UserSecretsId>807a1a6f-6bc2-4771-8af7-664b464c8945</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.App" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="2.1.2" />
+    <PackageReference Include="Microsoft.ML" Version="0.6.0" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.1.1" />
   </ItemGroup>
 
@@ -22,6 +24,12 @@
     <None Include="wwwroot\fonts\Latin_Rubik.woff2" />
     <None Include="wwwroot\fonts\Material_Icons.woff2" />
     <None Include="wwwroot\fonts\Mona_Shark.woff" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Update="wwwroot\ML\train.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 
 </Project>

@@ -1,17 +1,14 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using EF.AspNetCore.Models;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.HttpsPolicy;
+using System.Linq;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.EntityFrameworkCore;
-using System.Reflection;
+using Microsoft.AspNetCore.Authentication.Cookies;
 
 namespace Lowtel
 {
@@ -39,7 +36,7 @@ namespace Lowtel
             services.AddSession(options =>
             {
                 // Set a short timeout for easy testing.
-                options.IdleTimeout = TimeSpan.FromSeconds(10);
+                options.IdleTimeout = TimeSpan.FromHours(24);
                 options.Cookie.HttpOnly = true;
             });
 
@@ -52,6 +49,23 @@ namespace Lowtel
             connection = connection.Replace("{current_dir}", Environment.CurrentDirectory);
             
             services.AddDbContext<LotelContext>(options => options.UseSqlServer(connection));
+
+            services.AddDbContext<LotelContext>(options =>
+               options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+
+            // fb auth
+            services.AddAuthentication(options =>
+            {
+                options.DefaultChallengeScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+                options.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+                options.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+            }).AddFacebook(facebookOptions =>
+            {
+                facebookOptions.AppId = "381667942656976";
+                facebookOptions.AppSecret = "05551e8a47bf6fa9eabb1c0f6b22bd7f";
+            }).AddCookie();
+
+            services.AddMvc();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -71,6 +85,7 @@ namespace Lowtel
             app.UseStaticFiles();
             app.UseCookiePolicy();
             app.UseSession();
+            app.UseAuthentication();
 
             app.UseMvc(routes =>
             {
@@ -89,6 +104,18 @@ namespace Lowtel
                 routes.MapRoute(
                     name: "RoomsDetails",
                     template: "{controller=Rooms/Details}/{action=Details}/{id?}/{hotelId?}");
+
+                routes.MapRoute(
+                    name: "ReservationsEdit",
+                    template: "{controller=Reservations/Edit}/{action=Edit}/{ClientId}/{RoomId}/{HoteId}/{CheckInDate}");
+
+                routes.MapRoute(
+                    name: "ReservationsDelete",
+                    template: "{controller=Reservations/Delete}/{action=Edit}/{ClientId}/{RoomId}/{HoteId}/{CheckInDate}");
+
+                routes.MapRoute(
+                name: "ReservationsDetails",
+                template: "{controller=Reservations/Details}/{action=Edit}/{ClientId}/{RoomId}/{HoteId}/{CheckInDate}");
             });
         }
     }

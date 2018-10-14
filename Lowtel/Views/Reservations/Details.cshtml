@@ -23,26 +23,37 @@
             @Html.DisplayFor(model => model.CheckOutDate)
         </dd>
         <dt>
-            @Html.DisplayNameFor(model => model.Hotel)
+            @Html.DisplayNameFor(model => model.Hotel.Name)
         </dt>
         <dd>
-            @Html.DisplayFor(model => model.Hotel.Id)
+            @Html.DisplayFor(model => model.Hotel.Name)
         </dd>
         <dt>
-            @Html.DisplayNameFor(model => model.Room)
+            @Html.DisplayNameFor(model => model.Hotel.State)
         </dt>
         <dd>
-            @Html.DisplayFor(model => model.Room.Id)
+            @Html.DisplayFor(model => model.Hotel.State)
         </dd>
         <dt>
-            @Html.DisplayNameFor(model => model.Client)
+            @Html.DisplayNameFor(model => model.RoomId)
         </dt>
         <dd>
-            @Html.DisplayFor(model => model.Client.Id)
+            @Html.DisplayFor(model => model.RoomId)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Room.RoomType)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Room.RoomType.Name)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.ClientId)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.ClientId)
         </dd>
     </dl>
 </div>
 <div>
-    @Html.ActionLink("Edit", "Edit", new { /* id = Model.PrimaryKey */ }) |
     <a asp-action="Index">Back to List</a>
 </div>

@@ -27,19 +27,19 @@
             @Html.DisplayNameFor(model => model.Hotel)
         </dt>
         <dd>
-            @Html.DisplayFor(model => model.Hotel.Id)
+            @Html.DisplayFor(model => model.Hotel.Name)
         </dd>
         <dt>
             @Html.DisplayNameFor(model => model.Room)
         </dt>
         <dd>
-            @Html.DisplayFor(model => model.Room.Id)
+            @Html.DisplayFor(model => model.RoomId)
         </dd>
         <dt>
             @Html.DisplayNameFor(model => model.Client)
         </dt>
         <dd>
-            @Html.DisplayFor(model => model.Client.Id)
+            @Html.DisplayFor(model => model.ClientId)
         </dd>
     </dl>
     
@@ -47,6 +47,8 @@
         <input type="hidden" asp-for="ClientId" />
         <input type="hidden" asp-for="HotelId" />
         <input type="hidden" asp-for="RoomId" />
+        <input type="hidden" asp-for="CheckInDate"/>
+        <input type="hidden" asp-for="CheckOutDate"/>
         <input type="submit" value="Delete" class="btn btn-default" /> |
         <a asp-action="Index">Back to List</a>
     </form>

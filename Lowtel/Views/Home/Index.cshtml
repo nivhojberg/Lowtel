@@ -2,88 +2,157 @@
     ViewData["Title"] = "Lowtel";
 }
 
-<div class="row">
-    <div class="cover-container">
-        <img id="cover" src="~/images/cover.jpg" alt="ASP.NET" />
-    </div>
-    <div class="col-md-1">
-    </div>
-    <div class="col-md-3">
-        <div class="index-menu-box">
-            <a asp-controller="Hotels" asp-action="Index"><h2 class="link-text">Hotels</h2></a>
-            <p>
-                Check our high quality hotels with low prices across the world.
-            </p>
+<section>
+    <div class="row">
+        <div class="cover-container">
+            <img id="cover" src="~/images/cover.jpg" alt="ASP.NET" />
         </div>
-        <div class="index-menu-box">
-            <a asp-controller="Home" asp-action="About"><h2 class="link-text">About</h2></a>
-            <p>
-                Read more information about our company.
-            </p>
+        <div class="col-md-1">
+        </div>
+        <div class="col-md-3">
+            <div class="index-menu-box">
+                <a asp-controller="Hotels" asp-action="Index"><h2 class="link-text">Hotels</h2></a>
+                <p>
+                    Check our high quality hotels with low prices across the world.
+                </p>
+            </div>
+            <div class="index-menu-box">
+                <a asp-controller="Home" asp-action="About"><h2 class="link-text">About</h2></a>
+                <p>
+                    Read more information about our company.
+                </p>
+            </div>
+        </div>
+        <header class="col-md-4 logo-container">
+            <img src="~/images/Logo.png" alt="ASP.NET" style="width: 100%" />
+        </header>
+        <div class="col-md-3">
+            <div class="index-menu-box">
+                <a asp-controller="Reservations" asp-action="Index"><h2 class="link-text">Reservations</h2></a>
+                <p>
+                    Reserve your next vacation right now.
+                </p>
+            </div>
+            <div class="index-menu-box">
+                <a asp-controller="Home" asp-action="Contact"><h2 class="link-text">Contact</h2></a>
+                <p>
+                    Get in touch with us by address, phone or email.
+                </p>
+            </div>
+        </div>
+        <div class="col-md-1">
         </div>
     </div>
-    <div class="col-md-4 logo-container">
-        <img src="~/images/Logo.png" alt="ASP.NET" style="width: 100%" />
+</section>
+<section>
+    <aside class="main-titles-container">
+        <div>Best chef restaurants</div>
+        <div>Hotels in attractive areas</div>
+        <div>Cheapest prices</div>
+    </aside>
+</section>
+<section>
+    <div>
+        <h2>Hotels Map</h2>
+        <p>
+            <a asp-controller="Hotels" asp-action="Index">Click here</a> to check our high quality hotels with low prices across the world.
+        </p>
+        <div id="bingMap"></div>
+        <h4 id="weather"></h4>
     </div>
-    <div class="col-md-3">
-        <div class="index-menu-box">
-            <a asp-controller="Reservations" asp-action="Index"><h2 class="link-text">Reservations</h2></a>
-            <p>
-                Reserve your next vacation right now.
-            </p>
-        </div>
-        <div class="index-menu-box">
-            <a asp-controller="Home" asp-action="Contact"><h2 class="link-text">Contact</h2></a>
-            <p>
-                Get in touch with us by address, phone or email.
-            </p>
-        </div>
-    </div>
-    <div class="col-md-1">
-    </div>
-</div>
-<div class="main-titles-container">
-    <div>Best chef restaurants</div>
-    <div>Hotels in attractive areas</div>
-    <div>Cheapest prices</div>
-</div>
-<div>
-    <h2>Hotels Map</h2>
-    <p>
-        <a asp-controller="Hotels" asp-action="Index">Click here</a> to check our high quality hotels with low prices across the world.
-    </p>
-    <div id="bingMap"></div>
+</section>
 
-    <script type="text/javascript">
+<script type="text/javascript"
+        src="https://www.bing.com/api/maps/mapcontrol?callback=bingMapCallback&key=8jdU9kPTCEzVmyT3jRkU~rm3ZVd7SbAdEPp8lygIm8A~AuLnSHivAFETHCaowja_dJ75w4ff92UyxgW5RNfOMUaAVfTUeYeCj5oKEzjm4ItE&setLang=en"
+        async defer></script>
 
-        function bingMapCallback() {
-            var map = new Microsoft.Maps.Map(document.getElementById("bingMap"), {
-                credentials: '8jdU9kPTCEzVmyT3jRkU~rm3ZVd7SbAdEPp8lygIm8A~AuLnSHivAFETHCaowja_dJ75w4ff92UyxgW5RNfOMUaAVfTUeYeCj5oKEzjm4ItE',
-                center: new Microsoft.Maps.Location(0, 0),
-                zoom: 1,
-            });
+<script type="text/javascript">
+    // Function that converts temperature from fahrenheit value to celsius value
+    var FahrenheitToCelsius = function (FahrenheitTemp) {
+        return (FahrenheitTemp - 32) * 5 / 9;
+    }
 
-            // Load hotel cordinates in order to point them on the map.
-            $.ajax({
-                type: "GET",
-                url: "/Hotels/GetHotelsCords",
-                success: function (res) {
-                    res && res.forEach(data => {
-                        map.entities.push(new Microsoft.Maps.Pushpin(new Microsoft.Maps.Location(data.cordX, data.cordY), { title: data.name }));
-                    });
-                },
-                error: function (err) {
-                    console.error(err);
-                }
-            });
+    // Function that is called as a result of a weather response from Yahoo web service
+    var weatherCallback = function (data) {
+        // Check if there are weather results
+        if (data.query.results != null) {
+            var location = data.query.results.channel.location;
+            var locationText = location.city + ", " + location.country;
+            var condition = data.query.results.channel.item.condition;
+            var celsiusTemperature = parseInt(FahrenheitToCelsius(parseFloat(condition.temp)));
+            var conditionText = condition.text + ": " + celsiusTemperature + " &deg;";
+            var weatherText = "The weather in " + locationText + " is " + conditionText;
+
+            document.getElementById('weather').innerHTML = '<span>' + weatherText + '</span>';
         }
-    </script>
-    <script type="text/javascript"
-            src="https://www.bing.com/api/maps/mapcontrol?callback=bingMapCallback&key=8jdU9kPTCEzVmyT3jRkU~rm3ZVd7SbAdEPp8lygIm8A~AuLnSHivAFETHCaowja_dJ75w4ff92UyxgW5RNfOMUaAVfTUeYeCj5oKEzjm4ItE&setLang=en"
-            async defer></script>
-</div>
+        else {
+            document.getElementById('weather').innerHTML = '<span>No weather information for this city name</span>';
+        }
+    };
+
+    function bingMapCallback() {
+        var map = new Microsoft.Maps.Map(document.getElementById("bingMap"), {
+            credentials: '8jdU9kPTCEzVmyT3jRkU~rm3ZVd7SbAdEPp8lygIm8A~AuLnSHivAFETHCaowja_dJ75w4ff92UyxgW5RNfOMUaAVfTUeYeCj5oKEzjm4ItE',
+            center: new Microsoft.Maps.Location(0, 0),
+            zoom: 1,
+        });
+
+        // Add an infobox to the map so that we can display it when a pushpin is clicked.
+        infobox = new Microsoft.Maps.Infobox(map.getCenter(), { visible: false });
+        infobox.setMap(map);
+
+        // Load hotel cordinates in order to point them on the map.
+        $.ajax({
+            type: "GET",
+            url: "/Hotels/GetHotelsCords",
+            success: function (res) {
+                res && res.forEach(data => {
+                    // Create the point pushpin of the current hotel
+                    var pushpin = new Microsoft.Maps.Pushpin(new Microsoft.Maps.Location(data.cordX, data.cordY), { title: data.name });
+
+                    // Define the click event of the point
+                    Microsoft.Maps.Events.addHandler(pushpin, 'click', function (e) {
+                        // Get the hotel city name from the server by the clicked coordinates
+                        $.ajax({
+                            type: "GET",
+                            url: "/Hotels/GetHotelCityNameByCords?lat=" + e.target.geometry.y + "&lon=" + e.target.geometry.x,
+                            success: function (res) {
+                                // Call the Yahoo web service to get the weather of the selected hotel
+                                var script = document.createElement("script");
+                                script.type = "text/javascript";
+                                script.src = "https://query.yahooapis.com/v1/public/yql?q=select * from weather.forecast where woeid in (select woeid from geo.places(1) where text='" + res + "')&format=json&callback=weatherCallback";
+                                $("body").append(script);
+
+                                // Display the infobox with the selected city
+                                infobox.setOptions({
+                                    location: e.primitive.getLocation(),
+                                    description: res,
+                                    visible: true
+                                });
+                            },
+                            error: function (err) {
+                                // Display the infobox with an error message
+                                infobox.setOptions({
+                                    location: e.primitive.getLocation(),
+                                    description: 'No weather data for this location',
+                                    visible: true
+                                });
+                            }
+                        });
+                    });
+
+                    // Add the pushpin point to the map
+                    map.entities.push(pushpin);
+                });
+            },
+            error: function (err) {
+                console.error(err);
+            }
+        });
+    }
+</script>
 
 <video width="100%" height="400" controls>
-    <source src="~/movies/preview.mp4" type="video/mp4">    
+    <source src="~/movies/preview.mp4" type="video/mp4">
     Your browser does not support the video tag.
 </video>

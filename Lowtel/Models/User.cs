@@ -8,10 +8,10 @@ namespace Lowtel.Models
 {
     public class User
     {
-        [Required, MaxLength(20)]
+        [Required, MaxLength(20), Display(Name = "User Name")]
         public string UserName { get; set; }
 
-        [Required, DataType(DataType.Password),MinLength(6),MaxLength(10)]
+        [Required, DataType(DataType.Password), MinLength(3), MaxLength(10)]
         public string Password { get; set; }
     }
 }

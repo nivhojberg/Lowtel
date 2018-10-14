@@ -9,6 +9,13 @@
 <p>
     <a asp-action="Create">Create New</a>
 </p>
+
+<form>
+    Search: <input type="text" name="SearchString">
+    <input type="submit" value="Filter" />
+    <a asp-controller="Reservations" asp-action="Index">Clear</a>
+</form>
+
 <table class="table">
     <thead>
         <tr>
@@ -19,13 +26,19 @@
                 @Html.DisplayNameFor(model => model.CheckOutDate)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Hotel)
+                @Html.DisplayNameFor(model => model.Hotel.Name)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Room)
+                @Html.DisplayNameFor(model => model.Hotel.State)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Client)
+                @Html.DisplayNameFor(model => model.RoomId)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Room.RoomType)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ClientId)
             </th>
             <th></th>
         </tr>
@@ -40,18 +53,27 @@
                 @Html.DisplayFor(modelItem => item.CheckOutDate)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Hotel.Id)
+                @Html.DisplayFor(modelItem => item.Hotel.Name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Hotel.State)
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.Room.Id)
             </td>
             <td>
+                @Html.DisplayFor(modelItem => item.Room.RoomType.Name)
+            </td>
+            <td>
                 @Html.DisplayFor(modelItem => item.Client.Id)
             </td>
             <td>
-                @Html.ActionLink("Edit", "Edit", new { /* id=item.PrimaryKey */ }) |
-                @Html.ActionLink("Details", "Details", new { /* id=item.PrimaryKey */ }) |
-                @Html.ActionLink("Delete", "Delete", new { /* id=item.PrimaryKey */ })
+                <a asp-controller="Reservations" asp-action="Delete" asp-route-ClientId="@item.ClientId" asp-route-RoomId="@item.RoomId" asp-route-HotelId="@item.HotelId" asp-route-CheckInDate="@item.CheckInDate">Delete</a> |
+                <a asp-controller="Reservations" asp-action="Details" asp-route-ClientId="@item.ClientId" asp-route-RoomId="@item.RoomId" asp-route-HotelId="@item.HotelId" asp-route-CheckInDate="@item.CheckInDate">Details</a>
+                @if (item.CheckOutDate == null)
+                {
+                    <span>|</span> <a asp-controller="Reservations" asp-action="Edit" asp-route-ClientId="@item.ClientId" asp-route-RoomId="@item.RoomId" asp-route-HotelId="@item.HotelId" asp-route-CheckInDate="@item.CheckInDate">Check Out</a>
+                }
             </td>
         </tr>
 }

@@ -3,6 +3,12 @@
 @{
     ViewData["LogMSG"] = "";
 }
+<script src="https://ajax.aspnetcdn.com/ajax/jquery/jquery-3.3.1.min.js"
+        asp-fallback-src="~/lib/jquery/dist/jquery.min.js"
+        asp-fallback-test="window.jQuery"
+        crossorigin="anonymous"
+        integrity="sha384-tsQFqpEReu7ZLhBV2VZlAu7zcOV+rXbYlF2cqB8txI/8aZajjp4Bqd+V6D5IgvKT">
+</script>
 <!DOCTYPE html>
 <html>
 <head>
@@ -39,40 +45,46 @@
                     <li><a asp-controller="Hotels" asp-action="Index">Hotels</a></li>
                     <li><a asp-controller="Rooms" asp-action="Index">Rooms</a></li>
                     <li><a asp-controller="RoomTypes" asp-action="Index">Room-Types</a></li>
-                    <li><a asp-controller="Clients" asp-action="Index">Clients</a></li>
-                    <li><a asp-controller="Reservations" asp-action="Index">Reservations</a></li>
-                    <li><a asp-controller="Statistics" asp-action="Index">Statistics</a></li>
+                    @if (Context.Session.GetString(UsersController.SessionName) != null)
+                    {
+                        <li><a asp-controller="Clients" asp-action="Index">Clients</a></li>
+                        <li><a asp-controller="Reservations" asp-action="Index">Reservations</a></li>
+                        <li><a asp-controller="Statistics" asp-action="Index">Statistics</a></li>
+                    }
                     <li><a asp-controller="Home" asp-action="About">About</a></li>
                     <li><a asp-controller="Home" asp-action="Contact">Contact</a></li>
-                    @{
-                        if (Context.Session.GetString(UsersController.SessionName) != null)
-                        {
-                            <li><a asp-controller="Statistics" asp-action="Index">Statistics</a></li>                            
-                        }
+                    @if (User.Identity.IsAuthenticated)
+                    {
+                        ViewBag.profileUrl = "https://graph.facebook.com/" + User.Identities.ElementAt(0).Claims.ElementAt(0).Value + "/picture??width=100&amp;height=100";
+                        <li><a asp-area="" asp-controller="Auth" asp-action="SignOut">Sign out</a></li>
+                        <li><img alt="" class="facebook-profile" src="@ViewBag.profileUrl" /></li>
                     }
-
-                    <li style="position:absolute; right:20px;"><a class="hide" asp-controller="Users" asp-action="Login" id="LogMSG"></a></li>
-                    <li style="position:absolute; right:85px;"><a class="hide" asp-controller="Users" id="WelcomeMsg"></a></li>
-                    <li style="position:absolute; right:20px;"><a class="hide" asp-controller="Users" asp-action="LogOff" id="LogOff"></a></li>
+                    else
+                    {
+                        <li style="position:absolute; right:20px;"><a class="hide" asp-controller="Users" asp-action="Login" id="LogMSG"></a></li>
+                        <li style="position:absolute; right:85px;"><a class="hide" asp-controller="Users" id="WelcomeMsg"></a></li>
+                        <li style="position:absolute; right:20px;"><a class="hide" asp-controller="Users" asp-action="LogOff" id="LogOff"></a></li>
+                        <li><a class="hide" asp-controller="Auth" asp-action="FacebookLogin" id="FacebookLogin"></a></li>
+                    }
                 </ul>
 			</div>
 		</div>
 	</nav>
 
 	<partial name="_CookieConsentPartial" />
-
+      <div class="container body-content">
+        @if (User.Identity.IsAuthenticated)
+        {
+            <h3>Hello @User.Identity.Name</h3>
+        }        
+        @RenderBody()
+    </div>
 	<environment include="Development">
 		<script src="~/lib/jquery/dist/jquery.js"></script>
 		<script src="~/lib/bootstrap/dist/js/bootstrap.js"></script>
 		<script src="~/js/site.js" asp-append-version="true"></script>
 	</environment>
 	<environment exclude="Development">
-		<script src="https://ajax.aspnetcdn.com/ajax/jquery/jquery-3.3.1.min.js"
-				asp-fallback-src="~/lib/jquery/dist/jquery.min.js"
-				asp-fallback-test="window.jQuery"
-				crossorigin="anonymous"
-				integrity="sha384-tsQFqpEReu7ZLhBV2VZlAu7zcOV+rXbYlF2cqB8txI/8aZajjp4Bqd+V6D5IgvKT">
-		</script>
 		<script src="https://ajax.aspnetcdn.com/ajax/bootstrap/3.3.7/bootstrap.min.js"
 				asp-fallback-src="~/lib/bootstrap/dist/js/bootstrap.min.js"
 				asp-fallback-test="window.jQuery && window.jQuery.fn && window.jQuery.fn.modal"
@@ -105,9 +117,11 @@
                     // Inject messages in JQuery.
                     $("#WelcomeMsg").removeClass("hide").text("Welcome " + data.userName);			
                     $("#LogOff").removeClass("hide").text("Log Off");
+                   
 				}
                 else {                    
                     $("#LogMSG").removeClass("hide").text("Manager Login");
+                    $("#FacebookLogin").removeClass("hide").text("Login");
 				}
 			},
             error: function (e) {

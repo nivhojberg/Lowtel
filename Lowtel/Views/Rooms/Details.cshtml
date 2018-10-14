@@ -1,4 +1,6 @@
 ﻿@model Lowtel.Models.Room
+@using Lowtel.Controllers
+@using Microsoft.AspNetCore.Http;
 
 @{
     ViewData["Title"] = "Room Details";
@@ -49,6 +51,9 @@
     </dl>
 </div>
 <div>
-    @Html.ActionLink("Edit", "Edit/" + Model.Id + "/" + Model.HotelId) |
+    @if (Context.Session.GetString(UsersController.SessionName) != null)
+    {
+        @Html.ActionLink("Edit", "Edit/" + Model.Id + "/" + Model.HotelId) <span>|</span>
+    }
     <a asp-action="Index">Back to List</a>
 </div>

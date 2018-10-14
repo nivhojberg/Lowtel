@@ -20,7 +20,8 @@ namespace Lowtel.Controllers
             _context = context;
         }
 
-        // GET: Clients
+        // This function returns the view of clients
+        // param: searchString - for searching a client 
         public async Task<IActionResult> Index(string searchString)
         {
             if (HttpContext.Session.GetString(UsersController.SessionName) != null)
@@ -47,7 +48,8 @@ namespace Lowtel.Controllers
             }            
         }
 
-        // GET: Clients/Details/5
+        // This function returns the view of details for client
+        // param: id - client id
         public async Task<IActionResult> Details(string id)
         {
             if (id == null)
@@ -65,15 +67,15 @@ namespace Lowtel.Controllers
             return View(client);
         }
 
-        // GET: Clients/Create
+        // This function returns the view of create page
         public IActionResult Create()
         {
             return View();
         }
 
         // POST: Clients/Create
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
+        // This function add a new client to db
+        // param: Client - new client to create
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,FirstName,LastName,PhoneNumber,CreditCard")] Client client)
@@ -102,6 +104,8 @@ namespace Lowtel.Controllers
         }
 
         // GET: Clients/Edit/5
+        // This function returns the view of edit for client
+        // param: id - client id
         public async Task<IActionResult> Edit(string id)
         {
             if (id == null)
@@ -118,8 +122,10 @@ namespace Lowtel.Controllers
         }
 
         // POST: Clients/Edit/5
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
+        // This function update client by id in the db
+        // param: id     - client id
+        //        client - client with new values 
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(string id, [Bind("Id,FirstName,LastName,PhoneNumber,CreditCard")] Client client)
@@ -160,6 +166,8 @@ namespace Lowtel.Controllers
         }
 
         // GET: Clients/Delete/5
+        // This function returns the view of delete for client
+        // param: id - client id
         public async Task<IActionResult> Delete(string id)
         {
             if (id == null)
@@ -186,6 +194,8 @@ namespace Lowtel.Controllers
         }
 
         // POST: Clients/Delete/5
+        // This function deleting client by id from the db.
+        // param: id - client id
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(string id)
@@ -203,6 +213,8 @@ namespace Lowtel.Controllers
             }
         }
 
+        // This function checks if a client is already exist in the db
+        // param: id - client id
         private bool ClientExists(string id)
         {
             return _context.Client.Any(e => e.Id == id);

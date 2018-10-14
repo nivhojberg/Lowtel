@@ -17,6 +17,7 @@ namespace Lowtel.Controllers
 			this.authenticationSchemeProvider = authenticationSchemeProvider;
 		}
 
+        // This function returns the view of logins options
         public async Task<IActionResult> FacebookLogin()
         {
 			var allSchemeProvider = (await authenticationSchemeProvider.GetAllSchemesAsync())
@@ -25,12 +26,14 @@ namespace Lowtel.Controllers
 			return View(allSchemeProvider);
         }
 
-		public IActionResult SignIn()
+        // This function redirect to facebook login page, and can input username and password then login successly
+        public IActionResult SignIn()
 		{
 			return Challenge(new AuthenticationProperties { RedirectUri = "/" }, "Facebook");
 		}
 
-		public async Task<IActionResult> SignOut()
+        // This functions signs the current user out of the application
+        public async Task<IActionResult> SignOut()
 		{
 			await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
 			return RedirectToAction("Index", "Home");

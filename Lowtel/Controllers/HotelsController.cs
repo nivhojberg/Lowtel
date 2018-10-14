@@ -234,7 +234,7 @@ namespace Lowtel.Controllers
         // This function returns a list of hotel state from the db.
         public List<string> GetAllHotelsState()
         {
-            return _context.Hotel.Select(h => h.State).ToList();
+            return _context.Hotel.GroupBy(h => h.State).Select(h => h.Key).ToList();
         }
        
         // This function returns a list of hotels cities by state.

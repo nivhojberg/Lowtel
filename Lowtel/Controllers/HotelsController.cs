@@ -21,6 +21,8 @@ namespace Lowtel.Controllers
         }
 
         // GET: Hotels
+        // This function returns the view of hotels
+        // param: searchString - for searching a hotel 
         public async Task<IActionResult> Index(string searchString)
         {
             var hotels = from m in _context.Hotel
@@ -43,6 +45,8 @@ namespace Lowtel.Controllers
         }
 
         // GET: Hotels/Details/5
+        // This function returns the view of details for hotel
+        // param: id - hotel id
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -61,14 +65,15 @@ namespace Lowtel.Controllers
         }
 
         // GET: Hotels/Create
+        // This function returns the view of create page
         public IActionResult Create()
         {
             return View();
         }
 
         // POST: Hotels/Create
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
+        // This function add a new hotel to db
+        // param: Hotel - new hotel to create
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,Name,State,City,Address,StarsRate,Description,CordX,CordY")] Hotel hotel)
@@ -92,7 +97,8 @@ namespace Lowtel.Controllers
             }            
         }
 
-        // GET: Hotels/Edit/5
+        // This function returns the view of edit for hotel
+        // param: id - hotel id
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -109,8 +115,9 @@ namespace Lowtel.Controllers
         }
 
         // POST: Hotels/Edit/5
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
+        // This function update hotel by id in the db
+        // param: id    - hotel id
+        //        Hotel - hotel with new values 
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("Id,Name,State,City,Address,StarsRate,Description,CordX,CordY")] Hotel hotel)
@@ -151,6 +158,8 @@ namespace Lowtel.Controllers
         }
 
         // GET: Hotels/Delete/5
+        // This function returns the view of delete for hotel
+        // param: id - hotel id
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -177,6 +186,8 @@ namespace Lowtel.Controllers
         }
 
         // POST: Hotels/Delete/5
+        // This function deleting hotel by id from the db.
+        // param: id - hotel id
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
@@ -220,16 +231,23 @@ namespace Lowtel.Controllers
                 .Where(h => h.CordX == x && h.CordY == y).FirstOrDefault().City;
         }
 
+        // This function returns a list of hotel state from the db.
         public List<string> GetAllHotelsState()
         {
-            return _context.Hotel.Select(h => h.State).ToList();
+            return _context.Hotel.GroupBy(h => h.State).Select(h => h.Key).ToList();
         }
        
+        // This function returns a list of hotels cities by state.
+        // param: state - state for filter
         public List<string> GetAllHotelsCityByState(string state)
         {            
             return _context.Hotel.Where(h => h.State == state).GroupBy(h => h.City).Select(h => h.Key).ToList();
         }
 
+        // This function returns the Index view of hotels with a list of hotels by filters
+        // param : hotelState   - filter
+        //         hotelCity    - filter
+        //         minStarsRate - filter
         public async Task<IActionResult> MultiSearch(string hotelState, string hotelCity, int minStarsRate)
         {
             var hotels = _context.Hotel.Where(h => h.State == hotelState &&

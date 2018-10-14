@@ -240,8 +240,8 @@ namespace Lowtel.Controllers
         // This function returns a list of hotels cities by state.
         // param: state - state for filter
         public List<string> GetAllHotelsCityByState(string state)
-        {
-            return _context.Hotel.Where(h => h.State == state).Select(h => h.City).ToList();
+        {            
+            return _context.Hotel.Where(h => h.State == state).GroupBy(h => h.City).Select(h => h.Key).ToList();
         }
 
         // This function returns the Index view of hotels with a list of hotels by filters

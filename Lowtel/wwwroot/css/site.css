@@ -162,9 +162,12 @@ video {
     font-weight: bold;
     color: #337ab7;
     border: 0.5px solid #979797;
-    padding: 2px 6px 2px 6px;
+    padding: 6px;
     border-radius: 5px;
-    margin-bottom: 14px;
+    margin-top: 10px;
+    min-height: 34px;
+    min-width: 30px;
+    text-align: center;
 }
 
 .prediction-sector {

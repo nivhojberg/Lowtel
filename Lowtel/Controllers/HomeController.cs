@@ -14,7 +14,6 @@ namespace Lowtel.Controllers
         // This function returns the home page
         public IActionResult Index()
         {
-            //HttpContext.Session.SetString(UsersController.SessionName, "admin");
             return View();
         }
 
